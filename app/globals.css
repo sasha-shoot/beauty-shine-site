@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply font-sans bg-lavender text-navy antialiased;
+  }
+  ::selection {
+    @apply bg-primary-light text-white;
+  }
+}
+
+@layer components {
+  /* Контейнер сторінки */
+  .container-page {
+    @apply max-w-page mx-auto px-5 sm:px-6 lg:px-8;
+  }
+
+  /* Стандартні кнопки */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-bold text-[15px] px-7 py-3.5 rounded-2xl transition-all duration-150;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white shadow-glow hover:bg-primary-dark hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-navy border-[1.6px] border-lavender-deep hover:border-primary hover:text-primary;
+  }
+
+  /* Розділ заголовків */
+  .eyebrow {
+    @apply text-xs font-extrabold tracking-[2.5px] text-primary uppercase;
+  }
+  .section-heading {
+    @apply font-serif font-semibold text-[clamp(28px,4vw,42px)] leading-tight tracking-tight;
+  }
+}
