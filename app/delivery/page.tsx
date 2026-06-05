@@ -4,40 +4,44 @@ export const metadata = { title: "Доставка — Beauty & Shine" };
 
 export default function DeliveryPage() {
   return (
-    <section className="container-page py-12 max-w-3xl">
-      <div className="eyebrow">Доставка</div>
-      <h1 className="section-heading mt-2 mb-6">Як отримати замовлення</h1>
+    <div className="space-y-4 sm:space-y-6 pt-6 pb-10">
+      <section className="container-page">
+        <div className="bubble rounded-bubble-lg">
+          <span className="pill">Доставка</span>
+          <h1 className="section-heading mt-4">Як отримати замовлення</h1>
+        </div>
+      </section>
 
-      <div className="grid sm:grid-cols-2 gap-4 mb-6">
-        <div className="bg-white rounded-2xl-soft p-5">
-          <div className="text-3xl mb-2">🚚</div>
-          <h3 className="font-extrabold text-lg">Нова Пошта</h3>
-          <p className="text-[14px] text-ink mt-1">
+      <section className="container-page grid sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="bubble-sm bubble-sm-hover sm:translate-y-3">
+          <div className="w-14 h-14 rounded-full bg-lavender flex items-center justify-center text-2xl mb-4">🚚</div>
+          <h3 className="font-extrabold text-[18px]">Нова Пошта</h3>
+          <p className="text-[14px] text-ink mt-2 leading-relaxed">
             Відправка по всій Україні протягом 1–2 робочих днів після оплати.
             Доставка на відділення або поштомат.
           </p>
         </div>
-        <div className="bg-white rounded-2xl-soft p-5">
-          <div className="text-3xl mb-2">🏬</div>
-          <h3 className="font-extrabold text-lg">Самовивіз із салону</h3>
-          <p className="text-[14px] text-ink mt-1">
+        <div className="bubble-sm bubble-sm-hover">
+          <div className="w-14 h-14 rounded-full bg-accent flex items-center justify-center text-2xl mb-4">🏬</div>
+          <h3 className="font-extrabold text-[18px]">Самовивіз із салону</h3>
+          <p className="text-[14px] text-ink mt-2 leading-relaxed">
             ТЦ «Дельта», 2 поверх, Ізмаїл. Щодня 07:00–20:00. Заберіть у зручний час.
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white rounded-2xl-soft p-6">
-        <h3 className="font-serif text-xl font-semibold mb-3">Оплата</h3>
-        <ul className="space-y-2 text-[14.5px] text-ink">
-          <li>💳 Онлайн картою — Visa, Mastercard, Apple Pay, Google Pay</li>
-          <li>💵 Оплата при отриманні в поштоматі чи відділенні Нової Пошти</li>
-          <li>🤝 Готівка / переказ при самовивозі із салону</li>
-        </ul>
-      </div>
-
-      <div className="mt-6">
-        <Link href="/catalog" className="btn-primary">До каталогу</Link>
-      </div>
-    </section>
+      <section className="container-page">
+        <div className="bubble rounded-bubble-lg">
+          <span className="pill-accent">Оплата</span>
+          <h3 className="font-serif text-2xl font-semibold mt-3 mb-4">Способи оплати</h3>
+          <ul className="space-y-2.5 text-[14.5px] text-ink">
+            <li className="flex items-start gap-3"><span className="text-lg shrink-0">💳</span><span><strong className="text-navy">Онлайн карткою</strong> — Visa, Mastercard, Apple Pay, Google Pay</span></li>
+            <li className="flex items-start gap-3"><span className="text-lg shrink-0">💵</span><span><strong className="text-navy">При отриманні</strong> у відділенні чи поштоматі Нової Пошти</span></li>
+            <li className="flex items-start gap-3"><span className="text-lg shrink-0">🤝</span><span><strong className="text-navy">Готівка / переказ</strong> при самовивозі із салону</span></li>
+          </ul>
+          <Link href="/catalog" className="btn-primary mt-6">До каталогу</Link>
+        </div>
+      </section>
+    </div>
   );
 }

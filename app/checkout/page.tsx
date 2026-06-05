@@ -1,15 +1,16 @@
 import Link from "next/link";
 
-export const metadata = { title: "Beauty & Shine" };
+export const metadata = { title: "Оформлення — Beauty & Shine" };
 
-export default function Page() {
+export default function CheckoutPage() {
   return (
-    <section className="container-page py-12">
-      <div className="bg-white rounded-2xl-soft py-14 px-6 text-center">
+    <section className="container-page pt-6 pb-10">
+      <div className="bubble rounded-bubble-lg text-center">
         <div className="text-5xl mb-3">⏳</div>
-        <h1 className="font-serif text-2xl font-semibold">Скоро будемо тут</h1>
+        <span className="pill mb-3">Скоро</span>
+        <h1 className="font-serif text-3xl font-semibold mt-3">Оформлення розробляємо</h1>
         <p className="text-ink mt-2 max-w-md mx-auto">
-          Ця сторінка зʼявиться разом із запуском каталогу і прийому замовлень.
+          Цей екран зʼявиться разом із запуском каталогу і прийому замовлень.
         </p>
         <Link href="/" className="btn-primary mt-6">На головну</Link>
       </div>
