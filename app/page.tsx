@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { Sparkle } from "@/components/Logo";
+import { ProductCard } from "@/components/ProductCard";
+import { getFeaturedProducts } from "@/lib/airtable";
 
-export default function HomePage() {
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const featured = await getFeaturedProducts(4);
+
   return (
     <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
 
@@ -146,19 +152,27 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ ХІТИ — порожній стан в bubble ═══════════ */}
+      {/* ═══════════ ХІТИ ═══════════ */}
       <section className="container-page">
-        <div className="bubble rounded-bubble-lg text-center">
-          <span className="pill-accent mb-4">Скоро</span>
-          <h2 className="section-heading mt-3">Каталог наповнюємо</h2>
-          <p className="text-ink mt-3 max-w-md mx-auto">
-            Готуємо фотографії та описи товарів від брендів divapharm та Veratin.
-            Загляньте трохи пізніше — або напишіть нам, оформимо вручну.
-          </p>
-          <div className="mt-7 flex gap-3 flex-wrap justify-center">
-            <Link href="/contacts" className="btn-primary">Звʼязатись з нами</Link>
-            <Link href="/about" className="btn-ghost">Про студію</Link>
+        <div className="bubble rounded-bubble-lg">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-7">
+            <div>
+              <span className="pill-accent mb-3">Хіти</span>
+              <h2 className="section-heading mt-2">Обирають наші клієнти</h2>
+            </div>
+            <Link href="/catalog" className="btn-light">Увесь каталог <span aria-hidden>→</span></Link>
           </div>
+
+          {featured.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {featured.map((p) => <ProductCard key={p.rec_id} product={p} />)}
+            </div>
+          ) : (
+            <div className="bg-lavender rounded-bubble py-12 px-6 text-center">
+              <p className="text-ink">Каталог наповнюємо — зайдіть пізніше</p>
+              <Link href="/contacts" className="btn-primary mt-4">Звʼязатись з нами</Link>
+            </div>
+          )}
         </div>
       </section>
 
