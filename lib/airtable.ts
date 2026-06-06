@@ -107,19 +107,16 @@ export async function getAllProducts(): Promise<Product[]> {
   return out;
 }
 
-/** Один товар за slug (поле "id" у таблиці). */
+/** Один товар за slug (поле "id" у таблиці). Без filterByFormula — фільтруємо в JS. */
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const formula = encodeURIComponent(`{id}='${slug}'`);
-  const data = await airtableFetch(`?filterByFormula=${formula}&maxRecords=1`);
-  if (!data.records.length) return null;
-  return recordToProduct(data.records[0]);
+  const all = await getAllProducts();
+  return all.find((p) => p.slug === slug) || null;
 }
 
-/** Хіти продажів — featured + у наявності. */
+/** Хіти продажів — featured + у наявності. Без filterByFormula — фільтруємо в JS. */
 export async function getFeaturedProducts(limit = 4): Promise<Product[]> {
-  const formula = encodeURIComponent(`AND({featured}=TRUE(), {in_stock}=TRUE())`);
-  const data = await airtableFetch(`?filterByFormula=${formula}&maxRecords=${limit}`);
-  return data.records.map(recordToProduct);
+  const all = await getAllProducts();
+  return all.filter((p) => p.featured && p.in_stock).slice(0, limit);
 }
 
 /** Категорії з підрахунком к-сті товарів. */
