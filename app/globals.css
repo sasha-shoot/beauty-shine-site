@@ -1,77 +1,41 @@
 @tailwind base;
-@tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html { @apply scroll-smooth; }
-  body { @apply font-sans bg-lavender text-navy antialiased; }
-  ::selection { @apply bg-primary-light text-white; }
+/* CSS дизайнера — вшито один-в-один */
+@import "./designer.css";
+
+/* Override: .reveal без scroll-JS — просто видимий */
+.reveal { opacity: 1 !important; transform: none !important; }
+
+/* Image slot placeholder (заміна <image-slot> з оригіналу) */
+.img-slot {
+  background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple-deep);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
-
-@layer components {
-  /* ── Контейнер сторінки ─────────────────────────────── */
-  .container-page {
-    @apply max-w-page mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  /* ── Bubble — плавуча біла картка-секція ──────────── */
-  .bubble {
-    @apply bg-white rounded-bubble-lg shadow-bubble p-6 sm:p-10 lg:p-14;
-  }
-  .bubble-sm {
-    @apply bg-white rounded-bubble shadow-bubble p-5 sm:p-7 transition-all duration-300;
-  }
-  .bubble-sm-hover:hover {
-    @apply -translate-y-1.5 shadow-bubble-hover;
-  }
-  .bubble-dark {
-    @apply bg-navy text-white rounded-bubble-lg shadow-bubble p-6 sm:p-10 lg:p-14;
-  }
-  .bubble-tint {
-    @apply bg-lavender-mist rounded-bubble shadow-bubble p-5 sm:p-7;
-  }
-
-  /* ── Pill-кнопки (capsule shape) ──────────────────── */
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 font-bold text-[14.5px] px-7 py-3.5 rounded-full transition-all duration-200;
-  }
-  .btn-primary {
-    @apply btn bg-navy text-white hover:bg-primary hover:shadow-glow hover:-translate-y-0.5;
-  }
-  .btn-light {
-    @apply btn bg-white text-navy shadow-pill hover:-translate-y-0.5;
-  }
-  .btn-ghost {
-    @apply btn bg-white/60 text-navy border border-navy/10 backdrop-blur hover:bg-white hover:-translate-y-0.5;
-  }
-  .btn-accent {
-    @apply btn bg-accent text-navy hover:-translate-y-0.5 hover:shadow-soft;
-  }
-
-  /* ── Pill-теги (capsule labels) ───────────────────── */
-  .pill {
-    @apply inline-flex items-center gap-1.5 bg-lavender text-navy text-[12px] font-bold tracking-wide px-3.5 py-1.5 rounded-full;
-  }
-  .pill-light {
-    @apply pill bg-white text-navy shadow-pill;
-  }
-  .pill-accent {
-    @apply pill bg-accent text-navy;
-  }
-  .pill-dark {
-    @apply pill bg-navy text-white;
-  }
-
-  /* ── Eyebrow (premium-стилізована мітка над H1) ──── */
-  .eyebrow {
-    @apply inline-flex items-center gap-1.5 bg-white text-primary text-[11px] font-extrabold tracking-[2px] uppercase px-3.5 py-1.5 rounded-full shadow-pill;
-  }
-
-  /* ── Заголовки ────────────────────────────────────── */
-  .section-heading {
-    @apply font-serif font-semibold text-[clamp(30px,4.5vw,52px)] leading-[1.05] tracking-tight;
-  }
-  .hero-heading {
-    @apply font-serif font-semibold text-[clamp(38px,6vw,76px)] leading-[1.02] tracking-tight;
-  }
+.img-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(157,102,214,.08), transparent 60%);
+  pointer-events: none;
 }
+.img-slot-label {
+  position: relative;
+  z-index: 1;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.7);
+  border-radius: 999px;
+  font-size: 12px;
+  backdrop-filter: blur(6px);
+}
+.img-slot-circle { border-radius: 50%; }
+.img-slot-rounded { /* radius задається інлайн в style */ }

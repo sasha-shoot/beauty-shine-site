@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug, getAllProducts } from "@/lib/airtable";
-import { ProductCard } from "@/components/ProductCard";
+import { ImageSlot } from "@/components/ImageSlot";
 import { AddToCartButton } from "@/components/AddToCartButton";
+import { ProductCard } from "@/components/ProductCard";
 
 export const revalidate = 60;
 
-// Генеруємо список slug'ів для SSG
 export async function generateStaticParams() {
   try {
     const products = await getAllProducts();
@@ -19,169 +19,119 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
   if (!product) return { title: "Товар не знайдено" };
-  return {
-    title: `${product.name} — Beauty & Shine`,
-    description: product.short,
-  };
+  return { title: `${product.name} — Beauty & Shine`, description: product.short };
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
-  // Схожі товари — з тієї ж категорії
   const all = await getAllProducts();
   const related = all
     .filter((p) => p.slug !== product.slug && p.category === product.category && p.in_stock)
     .slice(0, 4);
 
   return (
-    <div className="space-y-4 sm:space-y-6 pt-6 pb-10">
-      {/* Хлібні крихти */}
-      <div className="container-page">
-        <Link
-          href="/catalog"
-          className="inline-flex items-center gap-2 text-ink hover:text-primary font-semibold text-sm px-4 py-2 bg-white rounded-full shadow-pill transition-colors"
-        >
-          ← До каталогу
+    <section className="screen active" data-screen="product">
+      <div className="container prod">
+        <Link href="/catalog" className="back-btn">
+          <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Назад
         </Link>
-      </div>
 
-      {/* Основна картка товару */}
-      <section className="container-page">
-        <div className="bubble rounded-bubble-lg">
-          <div className="grid lg:grid-cols-[1.05fr,0.95fr] gap-8 lg:gap-12">
-            {/* Зображення */}
-            <div className="bg-lavender rounded-bubble overflow-hidden aspect-square flex items-center justify-center relative">
-              {product.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="text-6xl">📦</div>
-              )}
-              <span className="absolute top-4 left-4 pill-light">{product.brand}</span>
+        <div className="prod-view">
+          <div className="prod-media">
+            <ImageSlot
+              shape="rounded"
+              radius={28}
+              placeholder={product.name}
+              src={product.image}
+              alt={product.name}
+            />
+          </div>
+
+          <div className="prod-info">
+            <div className="prod-brand">{product.brand}</div>
+            <h1 className="prod-title">{product.name}</h1>
+
+            <div className="prod-meta">
+              <span className="stars">★★★★★</span>
+              <span className="reviews">(0 відгуків)</span>
             </div>
 
-            {/* Інфо */}
-            <div>
-              <span className="pill mb-3">{product.category}</span>
-              <h1 className="font-serif font-semibold text-[clamp(24px,3vw,36px)] leading-tight tracking-tight mt-3">
-                {product.name}
-              </h1>
-              <p className="text-ink mt-4 text-[15.5px] leading-relaxed">
-                {product.short}
+            <p className="prod-lead">{product.short}</p>
+
+            {product.variants_display && (
+              <div className="prod-variants">
+                <div className="eyebrow" style={{marginBottom: 6}}>Варіанти</div>
+                <div>{product.variants_display}</div>
+              </div>
+            )}
+
+            <div className="prod-price-row">
+              <span className="prod-price num">
+                {product.price_uah ? `${product.price_uah} грн` : "Ціна за запитом"}
+              </span>
+            </div>
+
+            <div className="prod-cta">
+              <AddToCartButton
+                product={{
+                  slug: product.slug,
+                  name: product.name,
+                  brand: product.brand,
+                  image: product.image,
+                  price_uah: product.price_uah || 0,
+                  variants_display: product.variants_display,
+                }}
+                disabled={!product.in_stock}
+              />
+            </div>
+
+            {!product.in_stock && (
+              <p style={{marginTop:12, color:"var(--purple-deep)", fontSize:13.5, fontWeight:600}}>
+                ⚠ Зараз немає в наявності — напишіть нам, повідомимо при поповненні
               </p>
-
-              {/* Ціна */}
-              <div className="mt-6 flex items-baseline gap-3">
-                {product.price_uah ? (
-                  <span className="font-serif font-semibold text-4xl text-navy">
-                    {product.price_uah} грн
-                  </span>
-                ) : (
-                  <span className="text-ink text-lg">Ціна за запитом</span>
-                )}
-              </div>
-
-              {/* Варіанти (поки що текстом) */}
-              {product.variants_display && (
-                <div className="mt-4 bg-lavender rounded-2xl p-3">
-                  <div className="text-[11px] font-bold tracking-wide text-ink uppercase mb-1">Варіанти</div>
-                  <div className="text-[13px]">{product.variants_display}</div>
-                </div>
-              )}
-
-              {/* CTA */}
-              <div className="mt-6 flex gap-3 flex-wrap">
-                <AddToCartButton
-                  product={{
-                    slug: product.slug,
-                    name: product.name,
-                    brand: product.brand,
-                    image: product.image,
-                    price_uah: product.price_uah || 0,
-                    variants_display: product.variants_display,
-                  }}
-                  disabled={!product.in_stock}
-                />
-                <Link href="/contacts" className="btn-ghost">
-                  Запитати про товар
-                </Link>
-              </div>
-
-              {!product.in_stock && (
-                <p className="mt-3 text-[13px] text-primary font-semibold">
-                  ⚠️ Зараз немає в наявності — напишіть нам, повідомимо при поповненні
-                </p>
-              )}
-
-              {/* Теги */}
-              {product.tags.length > 0 && (
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {product.tags.map((t) => (
-                    <span key={t} className="pill text-[11px]">{t}</span>
-                  ))}
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
-      </section>
 
-      {/* Опис, склад, спосіб застосування */}
-      <section className="container-page grid sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="bubble-sm">
-          <span className="pill mb-3">Опис</span>
-          <h3 className="font-serif text-xl font-semibold mt-2 mb-3">Про засіб</h3>
-          <p className="text-[14.5px] text-ink leading-relaxed whitespace-pre-line">
-            {product.long}
-          </p>
-        </div>
-        <div className="bubble-sm">
-          <span className="pill mb-3">Застосування</span>
-          <h3 className="font-serif text-xl font-semibold mt-2 mb-3">Як використовувати</h3>
-          <p className="text-[14.5px] text-ink leading-relaxed whitespace-pre-line">
-            {product.usage}
-          </p>
-        </div>
-      </section>
-
-      {/* Склад INCI (якщо є) */}
-      {product.inci && !product.inci.startsWith("TODO") && !product.inci.startsWith("Не застосовується") && (
-        <section className="container-page">
-          <div className="bubble-sm">
-            <span className="pill mb-3">Склад</span>
-            <h3 className="font-serif text-xl font-semibold mt-2 mb-3">Активні компоненти (INCI)</h3>
-            <p className="text-[12.5px] text-ink leading-relaxed font-mono">
-              {product.inci}
-            </p>
+        {/* Опис + застосування */}
+        <div className="prod-tabs">
+          <div className="prod-tab">
+            <div className="eyebrow">Опис</div>
+            <h3 className="block-title">Про засіб</h3>
+            <p style={{whiteSpace:"pre-line", color:"var(--ink-2)", lineHeight:1.7, marginTop:12}}>{product.long}</p>
           </div>
-        </section>
-      )}
+          <div className="prod-tab">
+            <div className="eyebrow">Застосування</div>
+            <h3 className="block-title">Як використовувати</h3>
+            <p style={{whiteSpace:"pre-line", color:"var(--ink-2)", lineHeight:1.7, marginTop:12}}>{product.usage}</p>
+          </div>
+        </div>
 
-      {/* Схожі товари */}
-      {related.length > 0 && (
-        <section className="container-page">
-          <div className="bubble rounded-bubble-lg">
-            <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
-              <div>
-                <span className="pill">Схожі</span>
-                <h3 className="section-heading mt-2 text-[clamp(24px,3vw,32px)]">З цієї ж категорії</h3>
-              </div>
-              <Link href={`/catalog?cat=${encodeURIComponent(product.category)}`} className="btn-light">
-                Усі в категорії →
+        {product.inci && !product.inci.startsWith("TODO") && !product.inci.startsWith("Не застосовується") && (
+          <div className="prod-tab" style={{marginTop:16}}>
+            <div className="eyebrow">Склад</div>
+            <h3 className="block-title">Активні компоненти (INCI)</h3>
+            <p style={{fontFamily:"monospace", fontSize:12.5, color:"var(--ink-3)", lineHeight:1.7, marginTop:12}}>{product.inci}</p>
+          </div>
+        )}
+
+        {related.length > 0 && (
+          <section className="section" style={{marginTop:40}}>
+            <div className="head-row">
+              <div><div className="eyebrow">Схожі</div><h2 className="block-title">З цієї ж категорії</h2></div>
+              <Link className="link" href={`/catalog?cat=${encodeURIComponent(product.category)}`}>
+                Усі в категорії <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </Link>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid">
               {related.map((p) => <ProductCard key={p.rec_id} product={p} />)}
             </div>
-          </div>
-        </section>
-      )}
-    </div>
+          </section>
+        )}
+      </div>
+    </section>
   );
 }

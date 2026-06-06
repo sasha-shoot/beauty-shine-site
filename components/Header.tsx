@@ -1,57 +1,78 @@
 "use client";
 
 import Link from "next/link";
-import { Logo } from "./Logo";
+import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 
 export function Header() {
   const { totalCount, isHydrated } = useCart();
-  const showCount = isHydrated && totalCount > 0;
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Scrolled state на хедері (поведінка з мокапу)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-3 sm:top-5 z-50 px-3 sm:px-5 mt-3 sm:mt-5">
-      <div className="max-w-page mx-auto">
-        <div className="bg-white/90 backdrop-blur-md rounded-full shadow-pill px-4 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between gap-3">
-          <div className="pl-1.5">
-            <Logo />
-          </div>
+    <>
+      <header className={`header ${scrolled ? "scrolled" : ""}`} id="header">
+        <div className="header-inner">
+          <Link href="/" className="logo">
+            <span className="logo-mark">
+              <svg width="19" height="21" viewBox="0 0 20 22" fill="none">
+                <path d="M7 1.5h6v2.6l1.8 1.4c.7.55 1.2 1.4 1.2 2.3v10.7c0 1.4-1.1 2.5-2.5 2.5h-7C5.1 21 4 19.9 4 18.5V7.8c0-.9.45-1.75 1.2-2.3L7 4.1V1.5z" fill="#FFFFFF"/>
+                <circle cx="10" cy="14" r="3" fill="#F5DE46"/>
+                <path d="M16.5 3.5L17 5l1.5.5L17 6l-.5 1.5L16 6l-1.5-.5L16 5l.5-1.5z" fill="#F5DE46"/>
+              </svg>
+            </span>
+            <span className="logo-word">beauty<span className="amp">&amp;</span>shine</span>
+          </Link>
 
-          <nav className="hidden lg:flex gap-1 text-[14px] font-semibold text-ink">
-            <Link href="/catalog"  className="px-4 py-2 rounded-full hover:bg-lavender hover:text-navy transition-colors">Каталог</Link>
-            <Link href="/about"    className="px-4 py-2 rounded-full hover:bg-lavender hover:text-navy transition-colors">Про нас</Link>
-            <Link href="/delivery" className="px-4 py-2 rounded-full hover:bg-lavender hover:text-navy transition-colors">Доставка</Link>
-            <Link href="/contacts" className="px-4 py-2 rounded-full hover:bg-lavender hover:text-navy transition-colors">Контакти</Link>
+          <nav className="nav">
+            <Link href="/catalog" className="nav-btn">Каталог</Link>
+            <Link href="/#results" className="nav-btn">Послуги</Link>
+            <Link href="/#studio" className="nav-btn">Про нас</Link>
+            <Link href="/#features" className="nav-btn">Доставка</Link>
+            <Link href="/#blog" className="nav-btn">Блог</Link>
+            <Link href="/#site-footer" className="nav-btn">Контакти</Link>
           </nav>
 
-          <div className="flex gap-2">
-            <Link
-              href="/catalog"
-              aria-label="Каталог"
-              className="lg:hidden w-9 h-9 rounded-full bg-lavender text-navy flex items-center justify-center hover:bg-lavender-deep transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />
-              </svg>
-            </Link>
-            <Link
-              href="/cart"
-              aria-label="Кошик"
-              className="inline-flex items-center gap-2 bg-navy text-white pl-3.5 pr-4 py-2 rounded-full hover:bg-primary transition-all hover:-translate-y-px relative"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-              </svg>
-              <span className="text-[13px] font-bold hidden sm:inline">Кошик</span>
-              {showCount && (
-                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-accent text-navy text-[11px] font-bold flex items-center justify-center">
-                  {totalCount}
-                </span>
-              )}
+          <div className="header-right">
+            <button className="icon-btn burger" onClick={() => setMenuOpen(true)} aria-label="Меню">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            </button>
+            <Link href="/cart" className="cart-pill" aria-label="Кошик">
+              <span className="cp-ic">
+                <svg viewBox="0 0 24 24"><path d="M5 7h14l-1.5 9.5a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7L5 7z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+              </span>
+              <span className="cp-label">Кошик</span>
+              <span className="cart-count">{isHydrated ? totalCount : 0}</span>
             </Link>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="menu-sheet" style={{display:"flex"}} onClick={() => setMenuOpen(false)}>
+          <div className="menu-backdrop" />
+          <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
+            <button className="icon-btn menu-close" onClick={() => setMenuOpen(false)} aria-label="Закрити">
+              <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+            </button>
+            <Link href="/catalog"    className="menu-link" onClick={() => setMenuOpen(false)}>Каталог</Link>
+            <Link href="/#results"   className="menu-link" onClick={() => setMenuOpen(false)}>Послуги</Link>
+            <Link href="/#studio"    className="menu-link" onClick={() => setMenuOpen(false)}>Про нас</Link>
+            <Link href="/#features"  className="menu-link" onClick={() => setMenuOpen(false)}>Доставка</Link>
+            <Link href="/#blog"      className="menu-link" onClick={() => setMenuOpen(false)}>Блог</Link>
+            <Link href="/#site-footer" className="menu-link" onClick={() => setMenuOpen(false)}>Контакти</Link>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -2,156 +2,92 @@
 
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
+import { ImageSlot } from "@/components/ImageSlot";
 
 export default function CartPage() {
   const { items, totalCount, totalPrice, updateQuantity, removeItem, clear, isHydrated } = useCart();
 
-  // Поки не загрузилось з localStorage — показуємо skeleton-стан
   if (!isHydrated) {
     return (
-      <section className="container-page pt-6 pb-10">
-        <div className="bubble rounded-bubble-lg">
-          <span className="pill">Кошик</span>
-          <h1 className="section-heading mt-3">Завантаження…</h1>
-        </div>
-      </section>
+      <section className="screen active"><div className="container">
+        <div className="cart-page"><h1>Завантаження…</h1></div>
+      </div></section>
     );
   }
 
-  // ── Порожній кошик ──
   if (items.length === 0) {
     return (
-      <section className="container-page pt-6 pb-10">
-        <div className="bubble rounded-bubble-lg">
-          <div className="mb-6">
-            <span className="pill">Кошик</span>
-            <h1 className="section-heading mt-3">Ваше замовлення</h1>
-          </div>
-          <div className="bg-lavender rounded-bubble py-14 px-6 text-center">
-            <div className="text-5xl mb-3">🛒</div>
-            <h2 className="font-serif text-2xl font-semibold">Кошик порожній</h2>
-            <p className="text-ink mt-2 max-w-md mx-auto">
-              Саме час подивитись каталог і обрати щось для догляду.
-            </p>
-            <Link href="/catalog" className="btn-primary mt-6">До каталогу</Link>
+      <section className="screen active"><div className="container">
+        <div className="cart-page">
+          <div className="empty">
+            <div className="empty-emoji">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M5 7h14l-1.5 9.5a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7L5 7z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+            </div>
+            <h3>Кошик порожній</h3>
+            <p>Час подивитись каталог і обрати щось для догляду.</p>
+            <Link href="/catalog" className="btn btn-primary btn-lg">До каталогу</Link>
           </div>
         </div>
-      </section>
+      </div></section>
     );
   }
 
-  // ── Кошик з товарами ──
   return (
-    <div className="space-y-4 sm:space-y-6 pt-6 pb-10">
-      <section className="container-page">
-        <div className="bubble rounded-bubble-lg">
-          <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-            <div>
-              <span className="pill">Кошик</span>
-              <h1 className="section-heading mt-3">Ваше замовлення</h1>
-              <p className="text-ink mt-1 text-[14px]">
-                {totalCount} {totalCount === 1 ? "товар" : totalCount < 5 ? "товари" : "товарів"}
-              </p>
-            </div>
-            <button
-              onClick={clear}
-              className="text-[13px] text-ink hover:text-primary font-semibold transition-colors"
-            >
-              ✕ Очистити кошик
-            </button>
+    <section className="screen active"><div className="container">
+      <div className="cart-page">
+        <div className="head-row">
+          <div>
+            <div className="eyebrow">Кошик</div>
+            <h1 style={{fontFamily:"'Playfair Display', serif", fontSize:36, fontWeight:600, lineHeight:1.1}}>
+              Ваше <em style={{color:"var(--purple)"}}>замовлення</em>
+            </h1>
+            <p style={{color:"var(--ink-3)", marginTop:4, fontSize:14}}>
+              {totalCount} {totalCount === 1 ? "товар" : totalCount < 5 ? "товари" : "товарів"}
+            </p>
           </div>
+          <button onClick={clear} className="link" style={{cursor:"pointer", border:"none", background:"none"}}>
+            ✕ Очистити кошик
+          </button>
+        </div>
 
-          {/* Список товарів */}
-          <div className="space-y-3">
-            {items.map((item) => (
-              <div
-                key={item.slug}
-                className="bg-lavender rounded-bubble p-4 flex gap-4 items-center"
-              >
-                {/* Фото */}
-                <Link
-                  href={`/product/${item.slug}`}
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white overflow-hidden shrink-0"
-                >
-                  {item.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl">📦</div>
-                  )}
-                </Link>
-
-                {/* Назва й бренд */}
-                <div className="flex-1 min-w-0">
-                  <Link href={`/product/${item.slug}`} className="block group">
-                    <span className="pill text-[10px] mb-1">{item.brand}</span>
-                    <h3 className="font-extrabold text-[14.5px] leading-tight mt-1.5 group-hover:text-primary transition-colors line-clamp-2">
-                      {item.name}
-                    </h3>
-                  </Link>
-                  <div className="mt-1 text-[12px] text-ink">{item.variants_display}</div>
-                </div>
-
-                {/* Кількість + ціна (на мобільному внизу, на десктопі поряд) */}
-                <div className="flex flex-col items-end gap-2 shrink-0">
-                  <div className="flex items-center gap-1 bg-white rounded-full p-1">
-                    <button
-                      onClick={() => updateQuantity(item.slug, item.quantity - 1)}
-                      className="w-7 h-7 rounded-full bg-lavender text-navy hover:bg-lavender-deep transition-colors text-sm font-bold"
-                      aria-label="Менше"
-                    >
-                      −
-                    </button>
-                    <span className="px-2 font-bold text-[14px] min-w-[24px] text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.slug, item.quantity + 1)}
-                      className="w-7 h-7 rounded-full bg-lavender text-navy hover:bg-lavender-deep transition-colors text-sm font-bold"
-                      aria-label="Більше"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-serif font-semibold text-base text-navy whitespace-nowrap">
-                      {item.price_uah * item.quantity} грн
-                    </div>
-                    {item.quantity > 1 && (
-                      <div className="text-[11px] text-ink">{item.price_uah} грн × {item.quantity}</div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => removeItem(item.slug)}
-                    className="text-[11px] text-ink hover:text-primary font-semibold transition-colors"
-                  >
-                    Видалити
-                  </button>
-                </div>
+        <div className="cart-list">
+          {items.map((item) => (
+            <div key={item.slug} className="cart-item">
+              <Link href={`/product/${item.slug}`} className="cart-item-img">
+                <ImageSlot shape="rounded" radius={14} placeholder={item.name} src={item.image} alt={item.name} />
+              </Link>
+              <div className="cart-item-info">
+                <Link href={`/product/${item.slug}`}><b>{item.name}</b></Link>
+                <small>{item.brand} · {item.variants_display}</small>
+                <button onClick={() => removeItem(item.slug)} style={{marginTop:6, fontSize:11.5, color:"var(--ink-3)", background:"none", border:"none", cursor:"pointer"}}>
+                  Видалити
+                </button>
               </div>
-            ))}
-          </div>
+              <div style={{display:"flex", flexDirection:"column", gap:8, alignItems:"flex-end"}}>
+                <div className="cart-qty">
+                  <button onClick={() => updateQuantity(item.slug, item.quantity - 1)} aria-label="Менше">−</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.slug, item.quantity + 1)} aria-label="Більше">+</button>
+                </div>
+                <span className="cart-item-price num">{item.price_uah * item.quantity} грн</span>
+              </div>
+            </div>
+          ))}
         </div>
-      </section>
 
-      {/* Підсумок */}
-      <section className="container-page">
-        <div className="bubble rounded-bubble-lg">
-          <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-            <span className="text-[15px] text-ink">До сплати:</span>
-            <span className="font-serif font-semibold text-3xl text-navy">{totalPrice} грн</span>
-          </div>
-          <div className="text-[12.5px] text-ink mb-5">
-            Доставка розраховується на наступному кроці залежно від обраного методу
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <Link href="/checkout" className="btn-primary flex-1 sm:flex-initial">
-              Оформити замовлення →
-            </Link>
-            <Link href="/catalog" className="btn-ghost">Продовжити покупки</Link>
-          </div>
+        <div className="cart-totals">
+          <span className="cart-totals-label">До сплати:</span>
+          <span className="cart-totals-value num">{totalPrice} грн</span>
         </div>
-      </section>
-    </div>
+
+        <div style={{display:"flex", gap:12, flexWrap:"wrap"}}>
+          <Link href="/checkout" className="btn btn-primary btn-lg" style={{flex:1, minWidth:200}}>
+            Оформити замовлення
+            <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </Link>
+          <Link href="/catalog" className="btn btn-soft btn-lg">Продовжити покупки</Link>
+        </div>
+      </div>
+    </div></section>
   );
 }
