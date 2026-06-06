@@ -59,18 +59,38 @@ async function airtableFetch(query: string = ""): Promise<{ records: any[]; offs
   }
 }
 
+function isValidSlug(s: string): boolean {
+  // Slug — лише латинські букви, цифри, дефіси, підкреслення.
+  // НЕ містить пробілів, крапок, кирилиці чи службових міток типу "TODO".
+  if (!s || s.length < 2) return false;
+  if (s === "TODO" || s.toLowerCase() === "todo") return false;
+  return /^[a-zA-Z0-9_-]+$/.test(s);
+}
+
+function isValidImageUrl(s: string): boolean {
+  // Image використовуємо як <img src=...> — приймаємо тільки повні http/https URL.
+  // Інакше браузер інтерпретує як відносний шлях і робить 404.
+  return /^https?:\/\//i.test(s);
+}
+
 function recordToProduct(rec: any): Product {
   const f = rec.fields || {};
-  // Поле "image" в Airtable може бути або URL рядком, або Attachment-полем
+
+  // Slug — або валідний id з таблиці, або резерв на Airtable record ID
+  const rawSlug = typeof f.id === "string" ? f.id.trim() : "";
+  const slug = isValidSlug(rawSlug) ? rawSlug : rec.id;
+
+  // Image — або валідний http(s) URL, або attachment-поле, або пусто
   let imageUrl = "";
-  if (typeof f.image === "string") {
+  if (typeof f.image === "string" && isValidImageUrl(f.image)) {
     imageUrl = f.image;
   } else if (Array.isArray(f.image) && f.image.length > 0) {
     imageUrl = f.image[0].url || f.image[0].thumbnails?.large?.url || "";
   }
+
   return {
     rec_id: rec.id,
-    slug: f.id || rec.id,
+    slug,
     name: f.name || "",
     brand: f.brand || "",
     category: f.category || "",
