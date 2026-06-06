@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug, getAllProducts } from "@/lib/airtable";
 import { ProductCard } from "@/components/ProductCard";
+import { AddToCartButton } from "@/components/AddToCartButton";
 
 export const revalidate = 60;
 
@@ -96,13 +97,17 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
               {/* CTA */}
               <div className="mt-6 flex gap-3 flex-wrap">
-                <button
-                  className="btn-primary"
+                <AddToCartButton
+                  product={{
+                    slug: product.slug,
+                    name: product.name,
+                    brand: product.brand,
+                    image: product.image,
+                    price_uah: product.price_uah || 0,
+                    variants_display: product.variants_display,
+                  }}
                   disabled={!product.in_stock}
-                  // TODO: підключити до кошика (Етап 3)
-                >
-                  🛒 В кошик
-                </button>
+                />
                 <Link href="/contacts" className="btn-ghost">
                   Запитати про товар
                 </Link>

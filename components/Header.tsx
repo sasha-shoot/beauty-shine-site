@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { useCart } from "@/lib/cart-context";
 
 export function Header() {
+  const { totalCount, isHydrated } = useCart();
+  const showCount = isHydrated && totalCount > 0;
+
   return (
     <header className="sticky top-3 sm:top-5 z-50 px-3 sm:px-5 mt-3 sm:mt-5">
       <div className="max-w-page mx-auto">
@@ -30,13 +36,18 @@ export function Header() {
             <Link
               href="/cart"
               aria-label="Кошик"
-              className="inline-flex items-center gap-2 bg-navy text-white pl-3.5 pr-4 py-2 rounded-full hover:bg-primary transition-all hover:-translate-y-px"
+              className="inline-flex items-center gap-2 bg-navy text-white pl-3.5 pr-4 py-2 rounded-full hover:bg-primary transition-all hover:-translate-y-px relative"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
                 <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
               </svg>
               <span className="text-[13px] font-bold hidden sm:inline">Кошик</span>
+              {showCount && (
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-accent text-navy text-[11px] font-bold flex items-center justify-center">
+                  {totalCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>
