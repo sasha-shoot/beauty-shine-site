@@ -1,10 +1,7 @@
-@tailwind base;
-@tailwind utilities;
-
 /* CSS дизайнера — вшито один-в-один */
 @import "./designer.css";
 
-/* Override: .reveal без scroll-JS — просто видимий */
+/* Override: .reveal без scroll-JS — просто видимий за замовчуванням */
 .reveal { opacity: 1 !important; transform: none !important; }
 
 /* Image slot placeholder (заміна <image-slot> з оригіналу) */
@@ -39,3 +36,6 @@
 }
 .img-slot-circle { border-radius: 50%; }
 .img-slot-rounded { /* radius задається інлайн в style */ }
+
+/* disabled-стани для кнопок */
+button:disabled { opacity: 0.5; cursor: not-allowed; }

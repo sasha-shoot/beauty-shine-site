@@ -16,9 +16,9 @@ export default function CheckoutPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: відправка в Airtable + hutko інтеграція (Етап 4)
+    // TODO Etap 4: відправка в Airtable «Замовлення» + hutko інтеграція
     const orderNo = `BS-${String(Math.floor(Math.random() * 1000000)).padStart(6, "0")}`;
-    sessionStorage.setItem("bs_last_order", orderNo);
+    try { sessionStorage.setItem("bs_last_order", orderNo); } catch {}
     clear();
     router.push("/confirmation");
   }
@@ -40,10 +40,10 @@ export default function CheckoutPage() {
   return (
     <section className="screen active" data-screen="checkout"><div className="container checkout">
       <Link href="/cart" className="back-btn">
-        <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         Назад
       </Link>
-      <h1 style={{marginTop:8}}>Оформлення <em>замовлення</em></h1>
+      <h1 style={{ marginTop: 8 }}>Оформлення <em>замовлення</em></h1>
 
       <div className="checkout-grid">
         <form onSubmit={handleSubmit} noValidate>
@@ -83,15 +83,34 @@ export default function CheckoutPage() {
             </div>
 
             {delivery === "np" && (
-              <div style={{marginTop:16}}>
+              <div style={{ marginTop: 16 }}>
                 <div className="row2">
                   <div className="field">
                     <label>Місто</label>
-                    <input type="text" name="city" placeholder="Київ, Львів, Одеса…" />
+                    <input type="text" name="city" placeholder="Київ, Львів, Одеса…" list="citiesList" />
+                    <datalist id="citiesList">
+                      <option value="Київ" />
+                      <option value="Львів" />
+                      <option value="Одеса" />
+                      <option value="Харків" />
+                      <option value="Дніпро" />
+                      <option value="Вінниця" />
+                      <option value="Полтава" />
+                      <option value="Чернівці" />
+                      <option value="Ізмаїл" />
+                    </datalist>
                   </div>
                   <div className="field">
                     <label>Відділення</label>
-                    <input type="text" name="branch" placeholder="№ відділення Нової Пошти" />
+                    <select name="branch">
+                      <option value="">Оберіть зі списку…</option>
+                      <option>№ 1 (вул. Хрещатик, 22)</option>
+                      <option>№ 4 (вул. Сагайдачного, 14)</option>
+                      <option>№ 7 (просп. Перемоги, 88)</option>
+                      <option>№ 12 (вул. Шевченка, 5)</option>
+                      <option>№ 25 (вул. Соборна, 110)</option>
+                      <option>№ 37 (вул. Незалежності, 64)</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -127,10 +146,6 @@ export default function CheckoutPage() {
               <textarea name="comment" rows={3} placeholder="Зателефонувати перед відправкою, упакувати в подарунок…" />
             </div>
           </div>
-
-          <button type="submit" className="btn btn-purple btn-lg btn-full" style={{marginTop:16}}>
-            <span>Підтвердити замовлення</span>
-          </button>
         </form>
 
         <aside className="summary">
@@ -143,15 +158,18 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
-          <div className="summary-row" style={{marginTop:6}}>
-            <span className="lbl" style={{color:"var(--ink-3)", fontSize:13.5}}>Доставка</span>
+          <div className="summary-row" style={{ marginTop: 6 }}>
+            <span className="lbl" style={{ color: "var(--ink-3)", fontSize: 13.5 }}>Доставка</span>
             <span className="pr num">{deliveryCost === 0 ? "безкоштовно" : `${deliveryCost} грн`}</span>
           </div>
           <div className="summary-total">
             <span className="lbl">До сплати</span>
             <span className="val num">{grandTotal} грн</span>
           </div>
-          <p style={{marginTop:12, fontSize:12, color:"var(--ink-3)", textAlign:"center"}}>
+          <button type="submit" className="btn btn-purple btn-lg btn-full" onClick={handleSubmit}>
+            <span>Підтвердити замовлення</span>
+          </button>
+          <p style={{ marginTop: 12, fontSize: 13, color: "var(--ink-3)", textAlign: "center" }}>
             Натискаючи кнопку, Ви погоджуєтесь з умовами обробки персональних даних.
           </p>
         </aside>

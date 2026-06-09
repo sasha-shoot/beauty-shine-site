@@ -1,14 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart, type CartItem } from "@/lib/cart-context";
 import type { Product } from "@/lib/airtable";
 import { ImageSlot } from "./ImageSlot";
 
+// Бонусний рахунок: 1 ✦ = 25 грн (~4% кешбек)
+function bonusFor(price: number) {
+  return Math.floor(price / 25);
+}
+
+const FAV_KEY = "bs_fav_v1";
+
+function getFavs(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(FAV_KEY);
+    if (raw) return new Set(JSON.parse(raw));
+  } catch {}
+  return new Set();
+}
+
+function setFavs(s: Set<string>) {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); } catch {}
+}
+
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
-  const [added, setAdded] = useState(false);
+  const [favs, setFavsState] = useState<Set<string>>(new Set());
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setFavsState(getFavs());
+    setHydrated(true);
+  }, []);
+
+  const isFav = favs.has(product.slug);
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -23,50 +51,68 @@ export function ProductCard({ product }: { product: Product }) {
       variants_display: product.variants_display,
     };
     addItem(item);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+  }
+
+  function toggleFav(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = new Set(favs);
+    if (next.has(product.slug)) next.delete(product.slug);
+    else next.add(product.slug);
+    setFavs(next);
+    setFavsState(next);
+    window.dispatchEvent(new Event("bs:fav-changed"));
   }
 
   return (
-    <Link href={`/product/${product.slug}`} className="card">
-      <div className="card-media">
-        <ImageSlot
-          shape="rounded"
-          radius={18}
-          placeholder={product.name}
-          src={product.image}
-          alt={product.name}
-        />
-      </div>
-      <div className="card-body">
-        <div className="card-name">{product.name}</div>
-        <div className="card-meta">
-          <span className="stars">★★★★★</span>
-          <span className="reviews">(0)</span>
+    <article className="card">
+      <Link href={`/product/${product.slug}`} className="card-img" style={{ display: "block" }}>
+        <svg className="corner-star" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+        <div className="bottle">
+          <ImageSlot
+            shape="rounded"
+            radius={18}
+            placeholder={product.name}
+            src={product.image}
+            alt={product.name}
+          />
         </div>
-        <div className="card-bottom">
-          <span className="card-price num">
-            {product.price_uah ? `${product.price_uah} грн` : "за запитом"}
-          </span>
+        <button
+          className={`heart ${hydrated && isFav ? "on" : ""}`}
+          onClick={toggleFav}
+          aria-label="В обране"
+          type="button"
+        >
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        <span className="badge-brand">{product.brand}</span>
+      </Link>
+      <div className="card-body">
+        <Link href={`/product/${product.slug}`} style={{ display: "block" }}>
+          <div className="card-cat">{product.category}</div>
+          <div className="card-name">{product.name}</div>
+        </Link>
+        {product.price_uah ? (
+          <div className="card-bonus" title="Бонуси за програмою лояльності">
+            <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z"/></svg>
+            +{bonusFor(product.price_uah)} ✦ бонусів
+          </div>
+        ) : null}
+        <div className="card-foot">
+          <div className="price num">
+            {product.price_uah ? <>{product.price_uah}<small> грн</small></> : <small>за запитом</small>}
+          </div>
           <button
-            className={`add-btn ${added ? "added" : ""}`}
+            className="add-btn"
             onClick={handleAdd}
-            disabled={!product.price_uah}
             aria-label="Додати в кошик"
+            disabled={!product.price_uah}
+            type="button"
           >
-            {added ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            )}
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

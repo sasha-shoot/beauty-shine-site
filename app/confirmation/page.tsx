@@ -5,9 +5,12 @@ import { useEffect, useState } from "react";
 
 export default function ConfirmationPage() {
   const [orderNo, setOrderNo] = useState("№ BS-000000");
+
   useEffect(() => {
-    const stored = sessionStorage.getItem("bs_last_order");
-    if (stored) setOrderNo(`№ ${stored}`);
+    try {
+      const stored = sessionStorage.getItem("bs_last_order");
+      if (stored) setOrderNo(`№ ${stored}`);
+    } catch {}
   }, []);
 
   return (

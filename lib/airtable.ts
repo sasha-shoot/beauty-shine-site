@@ -152,3 +152,95 @@ export async function getCategories(): Promise<{ name: string; count: number }[]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+
+/* ────────────────────────────────────────────────────────────────
+   ЗАМОВЛЕННЯ та ВІЗИТИ (для кабінету)
+   Airtable таблиці:
+   - «Замовлення» (Orders): order_no, user_id, items, total, status, date, payment, delivery, address
+   - «Візити» (Visits): user_id, service, master, date, price
+─────────────────────────────────────────────────────────────────── */
+
+export type OrderRow = {
+  rec_id: string;
+  order_no: string;
+  user_id: string;
+  items: string;     // "Назва ×2, Друга назва ×1"
+  total: number;
+  status: "placed" | "shipped" | "delivered";
+  date: string;      // ISO
+  payment?: string;
+  delivery?: string;
+  address?: string;
+};
+
+export type VisitRow = {
+  rec_id: string;
+  user_id: string;
+  service: string;
+  master: string;
+  date: string;
+  price: number;
+};
+
+async function fetchTable(tableName: string, filterUser?: string) {
+  if (!TOKEN || !BASE_ID) {
+    console.warn(`${tableName}: env vars не налаштовано`);
+    return { records: [] as any[] };
+  }
+  const baseUrl = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+  try {
+    const res = await fetch(baseUrl, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) {
+      console.error(`${tableName} ${res.status}: ${await res.text()}`);
+      return { records: [] as any[] };
+    }
+    return res.json();
+  } catch (e) {
+    console.error(`${tableName} fetch error:`, e);
+    return { records: [] as any[] };
+  }
+}
+
+export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
+  const data = await fetchTable("Замовлення");
+  return (data.records as any[])
+    .map((rec: any): OrderRow => {
+      const f = rec.fields || {};
+      return {
+        rec_id: rec.id,
+        order_no: f.order_no || "",
+        user_id: String(f.user_id || ""),
+        items: f.items || "",
+        total: Number(f.total) || 0,
+        status: (f.status as "placed" | "shipped" | "delivered") || "placed",
+        date: f.date || rec.createdTime || "",
+        payment: f.payment || "",
+        delivery: f.delivery || "",
+        address: f.address || "",
+      };
+    })
+    .filter((o: OrderRow) => o.user_id === userId)
+    .sort((a: OrderRow, b: OrderRow) => (b.date || "").localeCompare(a.date || ""));
+}
+
+export async function getVisitsByUser(userId: string): Promise<VisitRow[]> {
+  const data = await fetchTable("Візити");
+  return (data.records as any[])
+    .map((rec: any): VisitRow => {
+      const f = rec.fields || {};
+      return {
+        rec_id: rec.id,
+        user_id: String(f.user_id || ""),
+        service: f.service || "",
+        master: f.master || "",
+        date: f.date || "",
+        price: Number(f.price) || 0,
+      };
+    })
+    .filter((v: VisitRow) => v.user_id === userId)
+    .sort((a: VisitRow, b: VisitRow) => (b.date || "").localeCompare(a.date || ""));
+}

@@ -2,18 +2,23 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <section className="screen active"><div className="container">
-      <div className="empty" style={{padding:"80px 24px"}}>
-        <div className="empty-emoji">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
-        </div>
-        <h3>Сторінку не знайдено</h3>
-        <p>Можливо, вона переїхала або ще не створена. Спробуйте повернутись на головну.</p>
-        <div style={{display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginTop:16}}>
-          <Link href="/" className="btn btn-primary btn-lg">На головну</Link>
-          <Link href="/catalog" className="btn btn-soft btn-lg">До каталогу</Link>
+    <section className="screen active" data-screen="notfound">
+      <div className="container nf-wrap">
+        <div className="nf-card">
+          <div className="nf-spark-field" aria-hidden="true">
+            <svg className="nf-sp s1" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+            <svg className="nf-sp s2" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+            <svg className="nf-sp s3" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+          </div>
+          <div className="nf-code">404</div>
+          <h2>Сторінку не знайдено</h2>
+          <p>Можливо, посилання застаріло або сторінку прибрали. Але краса нікуди не зникла — повертайтесь до магазину.</p>
+          <div className="nf-cta">
+            <Link href="/" className="btn btn-purple btn-lg">На головну</Link>
+            <Link href="/catalog" className="btn btn-ghost btn-lg">До каталогу</Link>
+          </div>
         </div>
       </div>
-    </div></section>
+    </section>
   );
 }

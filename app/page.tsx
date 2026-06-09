@@ -2,11 +2,11 @@ import Link from "next/link";
 import { getFeaturedProducts, getAllProducts } from "@/lib/airtable";
 import { ProductCard } from "@/components/ProductCard";
 import { ImageSlot } from "@/components/ImageSlot";
+import { MasterCard } from "@/components/MasterCard";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  // Хіти. Якщо featured порожньо — беремо перші 4 з in_stock
   let featured = await getFeaturedProducts(4);
   if (featured.length === 0) {
     const all = await getAllProducts();
@@ -17,11 +17,11 @@ export default async function HomePage() {
     <section className="screen active" data-screen="home">
       <div className="container">
 
-        {/* ═════════════ HERO ═════════════ */}
+        {/* ═══════════════ HERO ═══════════════ */}
         <section className="hero">
           <div className="hero-grid">
             <div className="hero-copy reveal">
-              <span className="pill-badge"><span className="pb-star">✦</span> ТУРБО ДЛЯ ВАШОЇ КРАСИ</span>
+              <span className="pill-badge"><span className="pb-star">✦</span> Сімейна студія краси</span>
               <h1>Догляд, що <em>сяє</em> разом із вами</h1>
               <p className="hero-sub">Професійна косметика та послуги для щоденного догляду, створені для краси та вашої впевненості.</p>
               <div className="hero-cta">
@@ -38,7 +38,10 @@ export default async function HomePage() {
             </div>
 
             <div className="hero-visual reveal">
-              <ImageSlot shape="rounded" radius={34} className="hero-img" placeholder="Фото моделі" />
+              <div className="hero-cutout-wrap">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="hero-cutout" src="/designer/masters-hero-2.png" alt="Іван та Ірина — майстри студії Beauty & Shine" />
+              </div>
               <svg className="hero-spark" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
               <div className="float-card fc-1">
                 <span className="fc-ic ic-star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.8 6.6 7.2.6-5.5 4.7 1.7 7-6.2-3.8-6.2 3.8 1.7-7L1.7 9.2 9 8.6z"/></svg></span>
@@ -56,7 +59,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ═════════════ FEATURES ═════════════ */}
+        {/* ═══════════════ FEATURES ═══════════════ */}
         <section className="section" id="features">
           <div className="feat-row reveal">
             <div className="feat-card">
@@ -78,7 +81,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ═════════════ CATEGORIES + POPULAR ═════════════ */}
+        {/* ═══════════════ CATEGORIES + POPULAR ═══════════════ */}
         <section className="section">
           <div className="cat-pop reveal">
             <div className="cat-panel">
@@ -117,13 +120,16 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ═════════════ STUDIO DARK BANNER ═════════════ */}
+        {/* ═══════════════ STUDIO BANNER ═══════════════ */}
         <section className="section" id="studio">
           <div className="studio-banner reveal">
             <div className="studio-copy">
               <h2>Сімейна студія краси<br/>та здоров&apos;я</h2>
               <p>Beauty &amp; Shine — це про турботу, якість і натуральність. Ми ретельно обираємо інгредієнти та працюємо для вашого щоденного комфорту і сяючого вигляду.</p>
-              <Link href="/#masters" className="btn btn-purple btn-lg">Дізнатись більше <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
+              <Link href="/#masters" className="btn btn-purple btn-lg">
+                Дізнатись більше
+                <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </Link>
               <div className="studio-stats">
                 <div className="st"><b>8+</b><span>років досвіду</span></div>
                 <div className="st"><b>300+</b><span>клієнтів щомісяця</span></div>
@@ -135,19 +141,15 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ═════════════ RESULTS (before/after) ═════════════ */}
+        {/* ═══════════════ BEFORE/AFTER ═══════════════ */}
         <section className="section" id="results">
           <div className="head-row reveal">
             <div><div className="eyebrow">До / Після</div><h2 className="block-title">Результати наших клієнтів</h2></div>
-            <Link className="link" href="/catalog">Переглянути всі <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
+            <Link className="link" href="/reviews">Переглянути всі <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
           </div>
           <div className="ba-grid reveal">
-            {[
-              { title: "Манікюр" },
-              { title: "Педикюр" },
-              { title: "Подологія" },
-            ].map((b, i) => (
-              <div key={i} className="ba-card">
+            {["Манікюр", "Педикюр", "Подологія"].map((title) => (
+              <div key={title} className="ba-card">
                 <div className="ba-media">
                   <ImageSlot className="ba-half" shape="rect" placeholder="До" />
                   <ImageSlot className="ba-half" shape="rect" placeholder="Після" />
@@ -155,56 +157,67 @@ export default async function HomePage() {
                   <span className="ba-tag r">Після</span>
                   <span className="ba-divider"><span className="ba-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 5 12 9 18"/><polyline points="15 6 19 12 15 18"/></svg></span></span>
                 </div>
-                <div className="ba-foot"><span className="ba-title">{b.title}</span><span className="ba-link">Детальніше <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
+                <div className="ba-foot"><span className="ba-title">{title}</span><span className="ba-link">Детальніше <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ═════════════ MASTERS ═════════════ */}
+        {/* ═══════════════ MASTERS (expandable) ═══════════════ */}
         <section className="section" id="masters">
           <div className="head-row reveal">
             <div><div className="eyebrow">Наша команда</div><h2 className="block-title">Познайомтесь з нашими майстрами</h2></div>
           </div>
           <div className="masters-grid reveal">
-            <div className="master-card">
-              <ImageSlot className="master-av" shape="circle" placeholder="Фото" />
-              <div className="master-tx">
-                <h4>Іван</h4>
-                <p className="role">Майстер педикюру та подології</p>
-                <span className="exp">8 років досвіду</span>
-              </div>
-            </div>
-            <div className="master-card">
-              <ImageSlot className="master-av" shape="circle" placeholder="Фото" />
-              <div className="master-tx">
-                <h4>Ірина</h4>
-                <p className="role">Майстер манікюру та догляду за руками</p>
-                <span className="exp">7 років досвіду</span>
-              </div>
-            </div>
+            <MasterCard
+              name="Іван"
+              role="Майстер педикюру та подології"
+              experience="8 років досвіду"
+              photoSrc="/designer/ivan-petrovych.jpg"
+              education={[
+                "Школа подології «PodoPro», Одеса — базовий та поглиблений курс",
+                "Курс «Апаратний педикюр», навчальний центр GERLACH",
+                "Майстер-клас «Корекція врослого нігтя» (титанові скоби, BS-методика)",
+              ]}
+              certificates={[
+                "Сертифікат подолога міжнародного зразка (IPM)",
+                "Сертифікат «Діабетична стопа: безпечний догляд»",
+                "Сертифікат з дезінфекції та стерилізації інструменту",
+              ]}
+              diplomas={[
+                "Диплом фахового педикюру вищої категорії",
+                "Грамота «Майстер року» регіонального конкурсу краси, 2024",
+                "Подяка спільноти клієнтів студії Beauty & Shine",
+              ]}
+            />
+            <MasterCard
+              name="Ірина"
+              role="Майстер манікюру та догляду за руками"
+              experience="7 років досвіду"
+              education={[
+                "Академія нігтьового дизайну «NailArt», Київ — повний курс",
+                "Курс «Комбінований та апаратний манікюр», KODI Professional",
+                "Майстер-клас «SPA-догляд за руками та парафінотерапія»",
+              ]}
+              certificates={[
+                "Сертифікат майстра манікюру міжнародного зразка",
+                "Сертифікат «Здорові нігті: діагностика та догляд»",
+                "Сертифікат з дезінфекції та стерилізації інструменту",
+              ]}
+              diplomas={[
+                "Диплом майстра нігтьового сервісу вищої категорії",
+                "Грамота фестивалю nail-індустрії «Краса в деталях», 2023",
+                "Подяка постійних клієнток студії Beauty & Shine",
+              ]}
+            />
           </div>
         </section>
 
-        {/* ═════════════ SPACE ═════════════ */}
-        <section className="section">
-          <div className="head-row reveal">
-            <div><div className="eyebrow">Наш простір</div><h2 className="block-title">Атмосфера турботи та комфорту</h2></div>
-            <Link className="link" href="/#masters">Переглянути більше <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
-          </div>
-          <div className="space-grid reveal">
-            <ImageSlot className="space-img" shape="rounded" radius={22} placeholder="Студія" />
-            <ImageSlot className="space-img" shape="rounded" radius={22} placeholder="Робоче місце" />
-            <ImageSlot className="space-img" shape="rounded" radius={22} placeholder="Вітрина" />
-            <ImageSlot className="space-img" shape="rounded" radius={22} placeholder="Зона очікування" />
-          </div>
-        </section>
-
-        {/* ═════════════ TESTIMONIALS ═════════════ */}
+        {/* ═══════════════ TESTIMONIALS PREVIEW ═══════════════ */}
         <section className="section">
           <div className="head-row reveal">
             <div><div className="eyebrow">Відгуки</div><h2 className="block-title">Що кажуть наші клієнти</h2></div>
-            <Link className="link" href="/#results">Усі відгуки <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
+            <Link className="link" href="/reviews">Усі відгуки <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
           </div>
           <div className="tt-grid reveal">
             <div className="tt-card">
@@ -222,43 +235,25 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ═════════════ BLOG ═════════════ */}
-        <section className="section" id="blog">
-          <div className="head-row reveal">
-            <div><div className="eyebrow">Корисні поради та новини</div><h2 className="block-title">З нашого блогу</h2></div>
-            <Link className="link" href="/catalog">Усі статті <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></Link>
-          </div>
-          <div className="blog-grid reveal">
-            {[
-              { t: "Як доглядати за кутикулою вдома?",       m: "5 хв читання" },
-              { t: "Чому тріскається шкіра стоп?",            m: "7 хв читання" },
-              { t: "Найкращі засоби після педикюру",          m: "4 хв читання" },
-            ].map((b, i) => (
-              <article key={i} className="blog-card">
-                <ImageSlot className="blog-img" shape="rect" placeholder="Зображення статті" />
-                <div className="blog-body"><h4>{b.t}</h4><span className="blog-meta">{b.m}</span></div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* ═════════════ NEWSLETTER ═════════════ */}
+        {/* ═══════════════ TELEGRAM BLOCK ═══════════════ */}
         <section className="section">
           <div className="newsletter reveal">
             <div className="nl-copy">
-              <h2>Підпишіться та отримайте<br/><span className="nl-accent">−10% на перше замовлення</span></h2>
-              <p>Будьте в курсі новинок та акцій студії Beauty &amp; Shine.</p>
-              <form className="nl-form">
-                <input type="email" name="email" placeholder="Ваш e-mail" autoComplete="email" />
-                <button type="submit" className="nl-btn" aria-label="Підписатися">
-                  <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </button>
-              </form>
+              <h2>Слідкуй за нами, де зручно!<br/><span className="nl-accent">прямо в Telegram</span></h2>
+              <p>Записуйся через нашого бота та отримуй знижку на перший запис. Для наших постійних клієнтів є зручна програма лояльності. Більше дізнаєшся в нашому боті!</p>
+              <a className="nl-cta" href="https://t.me/beautyandshine_bot" target="_blank" rel="noopener">
+                <span className="nl-cta-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4L3 11l5 2 2 6 3-4 4 3z"/></svg></span>
+                Перейти в Telegram-бот
+                <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
             </div>
             <div className="nl-deco">
               <svg className="nl-spark s1" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
               <svg className="nl-spark s2" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
-              <ImageSlot className="nl-img" shape="rounded" radius={20} placeholder="Продукти" />
+            </div>
+            <div className="nl-phone">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="nl-screen" src="/designer/tg-phone.png" alt="Telegram-бот Beauty & Shine" />
             </div>
           </div>
         </section>
