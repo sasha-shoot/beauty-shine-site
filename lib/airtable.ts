@@ -157,21 +157,25 @@ export async function getCategories(): Promise<{ name: string; count: number }[]
 /* ────────────────────────────────────────────────────────────────
    ЗАМОВЛЕННЯ та ВІЗИТИ (для кабінету)
    Airtable таблиці:
-   - «Замовлення» (Orders): order_no, user_id, items, total, status, date, payment, delivery, address
+   - «Замовлення» (Orders): order_no, user_id, customer_name, customer_phone,
+                            items, total, address, comment, date
    - «Візити» (Visits): user_id, service, master, date, price
+
+   Статусу/способів доставки/оплати немає — Beauty & Shine виступає посередником,
+   реальну відправку робить постачальник. Це просто історія покупок.
 ─────────────────────────────────────────────────────────────────── */
 
 export type OrderRow = {
   rec_id: string;
   order_no: string;
   user_id: string;
+  customer_name: string;
+  customer_phone: string;
   items: string;     // "Назва ×2, Друга назва ×1"
   total: number;
-  status: "placed" | "shipped" | "delivered";
+  address: string;   // місто + відділення НП (для постачальника)
+  comment: string;
   date: string;      // ISO
-  payment?: string;
-  delivery?: string;
-  address?: string;
 };
 
 export type VisitRow = {
@@ -214,13 +218,13 @@ export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
         rec_id: rec.id,
         order_no: f.order_no || "",
         user_id: String(f.user_id || ""),
+        customer_name: f.customer_name || "",
+        customer_phone: f.customer_phone || "",
         items: f.items || "",
         total: Number(f.total) || 0,
-        status: (f.status as "placed" | "shipped" | "delivered") || "placed",
-        date: f.date || rec.createdTime || "",
-        payment: f.payment || "",
-        delivery: f.delivery || "",
         address: f.address || "",
+        comment: f.comment || "",
+        date: f.date || rec.createdTime || "",
       };
     })
     .filter((o: OrderRow) => o.user_id === userId)
