@@ -3,6 +3,7 @@ import { getFeaturedProducts, getAllProducts } from "@/lib/airtable";
 import { ProductCard } from "@/components/ProductCard";
 import { ImageSlot } from "@/components/ImageSlot";
 import { MasterCard } from "@/components/MasterCard";
+import { BeforeAfterCompare } from "@/components/BeforeAfterCompare";
 
 export const revalidate = 60;
 
@@ -155,16 +156,7 @@ export default async function HomePage() {
           </div>
           <div className="ba-grid reveal">
             {["Манікюр", "Педикюр", "Подологія"].map((title) => (
-              <div key={title} className="ba-card">
-                <div className="ba-compare">
-                  <ImageSlot className="ba-layer ba-after"  shape="rect" placeholder="Фото «Після»" />
-                  <ImageSlot className="ba-layer ba-before" shape="rect" placeholder="Фото «До»" />
-                  <span className="ba-tag l">До</span>
-                  <span className="ba-tag r">Після</span>
-                  <span className="ba-divider"><span className="ba-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 5 12 9 18"/><polyline points="15 6 19 12 15 18"/></svg></span></span>
-                </div>
-                <div className="ba-foot"><span className="ba-title">{title}</span><span className="ba-link">Детальніше <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></div>
-              </div>
+              <BeforeAfterCompare key={title} title={title} />
             ))}
           </div>
         </section>

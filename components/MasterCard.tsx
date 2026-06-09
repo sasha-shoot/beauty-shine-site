@@ -17,7 +17,7 @@ export function MasterCard({ name, role, experience, photoSrc, education, certif
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="master-block">
+    <div className={`master-block ${open ? "open" : ""}`}>
       <div
         className="master-card"
         role="button"
@@ -38,14 +38,11 @@ export function MasterCard({ name, role, experience, photoSrc, education, certif
           <span className="exp">{experience}</span>
         </div>
         <span className="master-toggle" aria-hidden="true">
-          {open ? (
-            <svg className="mt-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-          ) : (
-            <svg className="mt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          )}
+          <svg className="mt-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg className="mt-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
         </span>
       </div>
-      <div className="master-detail" style={{ display: open ? "block" : "none" }}>
+      <div className="master-detail">
         <div className="master-detail-inner">
           <div className="md-group">
             <h5>Навчання</h5>
