@@ -4,9 +4,9 @@
 /* Override: .reveal без scroll-JS — просто видимий за замовчуванням */
 .reveal { opacity: 1 !important; transform: none !important; }
 
-/* Image slot placeholder (заміна <image-slot> з оригіналу) */
+/* Image slot placeholder — !important щоб не перебивали parent-класи (.studio-img тощо) */
 .img-slot {
-  background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-2) 100%);
+  background: linear-gradient(135deg, var(--lavender) 0%, var(--lavender-2) 100%) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,20 +22,20 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 30%, rgba(157,102,214,.08), transparent 60%);
+  background: radial-gradient(circle at 30% 30%, rgba(157,102,214,.18), transparent 60%);
   pointer-events: none;
 }
 .img-slot-label {
   position: relative;
   z-index: 1;
   padding: 8px 14px;
-  background: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.85);
   border-radius: 999px;
   font-size: 12px;
   backdrop-filter: blur(6px);
+  color: var(--purple-deep);
+  font-weight: 700;
 }
-.img-slot-circle { border-radius: 50%; }
-.img-slot-rounded { /* radius задається інлайн в style */ }
+.img-slot-circle { border-radius: 50% !important; }
 
-/* disabled-стани для кнопок */
 button:disabled { opacity: 0.5; cursor: not-allowed; }

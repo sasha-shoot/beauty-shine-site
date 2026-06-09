@@ -5,6 +5,7 @@ type Props = {
   className?: string;
   src?: string;
   alt?: string;
+  style?: React.CSSProperties;
 };
 
 export function ImageSlot({
@@ -14,15 +15,17 @@ export function ImageSlot({
   className = "",
   src,
   alt,
+  style: extraStyle,
 }: Props) {
   const shapeClass =
     shape === "circle" ? "img-slot-circle" :
     shape === "rounded" ? "img-slot-rounded" : "";
 
-  const style: React.CSSProperties = {};
+  const baseStyle: React.CSSProperties = {};
   if (shape === "rounded" && radius) {
-    style.borderRadius = `${radius}px`;
+    baseStyle.borderRadius = `${radius}px`;
   }
+  const finalStyle = { ...baseStyle, ...extraStyle };
 
   if (src) {
     return (
@@ -31,13 +34,13 @@ export function ImageSlot({
         src={src}
         alt={alt || placeholder}
         className={`${className} ${shapeClass}`}
-        style={{ ...style, objectFit: "cover", width: "100%", height: "100%" }}
+        style={{ ...finalStyle, objectFit: "cover", width: "100%", height: "100%" }}
       />
     );
   }
 
   return (
-    <div className={`img-slot ${className} ${shapeClass}`} style={style}>
+    <div className={`img-slot ${className} ${shapeClass}`} style={finalStyle}>
       <span className="img-slot-label">{placeholder}</span>
     </div>
   );

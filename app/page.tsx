@@ -37,10 +37,10 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="hero-visual reveal">
+            <div className="hero-visual reveal" style={{ height: 603, width: 507 }}>
               <div className="hero-cutout-wrap">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="hero-cutout" src="/designer/masters-hero-2.png" alt="Іван та Ірина — майстри студії Beauty & Shine" />
+                <img className="hero-cutout" src="/designer/masters-hero-2.png" alt="Іван та Ірина — майстри студії Beauty & Shine" style={{ height: 552, width: 557 }} />
               </div>
               <svg className="hero-spark" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
               <div className="float-card fc-1">
@@ -137,7 +137,13 @@ export default async function HomePage() {
                 <div className="st"><b>100%</b><span>позитивних відгуків</span></div>
               </div>
             </div>
-            <ImageSlot className="studio-img" shape="rounded" radius={24} placeholder="Фото салону" />
+            <ImageSlot
+              className="studio-img"
+              shape="rounded"
+              radius={24}
+              placeholder="Фото салону"
+              style={{ height: 482, width: 586, padding: 0 }}
+            />
           </div>
         </section>
 
@@ -150,9 +156,9 @@ export default async function HomePage() {
           <div className="ba-grid reveal">
             {["Манікюр", "Педикюр", "Подологія"].map((title) => (
               <div key={title} className="ba-card">
-                <div className="ba-media">
-                  <ImageSlot className="ba-half" shape="rect" placeholder="До" />
-                  <ImageSlot className="ba-half" shape="rect" placeholder="Після" />
+                <div className="ba-compare">
+                  <ImageSlot className="ba-layer ba-after"  shape="rect" placeholder="Фото «Після»" />
+                  <ImageSlot className="ba-layer ba-before" shape="rect" placeholder="Фото «До»" />
                   <span className="ba-tag l">До</span>
                   <span className="ba-tag r">Після</span>
                   <span className="ba-divider"><span className="ba-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 5 12 9 18"/><polyline points="15 6 19 12 15 18"/></svg></span></span>
@@ -236,7 +242,7 @@ export default async function HomePage() {
         </section>
 
         {/* ═══════════════ TELEGRAM BLOCK ═══════════════ */}
-        <section className="section">
+        <section className="section" style={{ height: 444 }}>
           <div className="newsletter reveal">
             <div className="nl-copy">
               <h2>Слідкуй за нами, де зручно!<br/><span className="nl-accent">прямо в Telegram</span></h2>
@@ -247,7 +253,7 @@ export default async function HomePage() {
                 <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </a>
             </div>
-            <div className="nl-deco">
+            <div className="nl-deco" style={{ height: 184, width: 330 }}>
               <svg className="nl-spark s1" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
               <svg className="nl-spark s2" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
             </div>

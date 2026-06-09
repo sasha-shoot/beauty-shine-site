@@ -27,7 +27,7 @@ export function Header() {
           <Link href="/" className="logo">
             <span className="logo-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/designer/logo-mark.png" alt="Beauty & Shine" style={{ width: 26, height: 22 }} />
+              <img src="/designer/logo-mark.png" alt="Beauty & Shine" style={{ height: 25, width: 32, opacity: 1 }} />
             </span>
             <span className="logo-word">beauty<span className="amp">&amp;</span>shine</span>
           </Link>
