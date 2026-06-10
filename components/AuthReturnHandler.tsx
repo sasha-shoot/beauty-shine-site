@@ -22,8 +22,9 @@ function Inner() {
       // Прибираємо параметр з URL
       router.replace(pathname || "/", { scroll: false });
     } else if (err) {
-      console.error("Telegram auth error:", err);
-      alert(`Помилка авторизації: ${err}`);
+      const details = sp?.get("details");
+      console.error("Telegram auth error:", err, details);
+      alert(`Помилка авторизації: ${err}${details ? `\n\nДеталі: ${details}` : ""}`);
       router.replace(pathname || "/", { scroll: false });
     }
   }, [sp, refresh, openProfile, router, pathname]);

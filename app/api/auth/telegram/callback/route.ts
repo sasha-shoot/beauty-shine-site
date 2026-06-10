@@ -40,9 +40,10 @@ export async function GET(req: NextRequest) {
   try {
     const result = await exchangeCodeForTokens({ code, codeVerifier: stateData.verifier });
     claims = result.claims;
+    console.log("[callback] OIDC success, claims:", JSON.stringify(claims));
   } catch (e: any) {
-    console.error("token exchange error:", e?.message || e);
-    return redirectToHome(req, { authError: "token_exchange_failed" });
+    console.error("[callback] token exchange error:", e?.message || e);
+    return redirectToHome(req, { authError: "token_exchange_failed", details: e?.message?.slice(0, 200) || "unknown" });
   }
 
   // 4. Отримуємо/створюємо юзера в Airtable

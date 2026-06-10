@@ -115,12 +115,20 @@ export async function exchangeCodeForTokens(opts: {
 
   if (!res.ok) {
     const errText = await res.text();
+    console.error("[Telegram /token] not OK:", res.status, errText);
     throw new Error(`Token exchange failed (${res.status}): ${errText}`);
   }
 
   const data = await res.json();
+  console.log("[Telegram /token] response keys:", Object.keys(data).join(", "));
+  console.log("[Telegram /token] full response:", JSON.stringify(data));
+
   const idToken = data.id_token as string;
-  if (!idToken) throw new Error("id_token відсутній у відповіді Telegram");
+  if (!idToken) {
+    throw new Error(
+      `id_token відсутній у відповіді Telegram. Отримані ключі: ${Object.keys(data).join(", ")}`
+    );
+  }
 
   // Верифікація JWT через JWKS
   const { payload } = await jwtVerify(idToken, jwks, {
