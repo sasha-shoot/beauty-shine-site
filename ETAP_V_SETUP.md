@@ -1,70 +1,69 @@
-# Етап В — налаштування (треба зробити перед використанням)
+# Етап В — налаштування (OIDC версія)
 
-## 1️⃣ Створи таблицю «Користувачі» в Airtable
+⚠️ **Важливо:** Telegram **відключив legacy widget**. Зараз працює тільки новий OIDC-потік.
 
-У базі `appSUzIDbLksvmdkq` (тій самій, де «Товари» і «Замовлення») створи нову таблицю **«Користувачі»** з полями:
+---
 
-| Поле           | Тип                  | Примітка                                         |
-|----------------|----------------------|--------------------------------------------------|
-| `tg_user_id`   | Single line text     | Telegram ID, основний ключ пошуку                |
-| `first_name`   | Single line text     | Імʼя з Telegram                                  |
-| `last_name`    | Single line text     | Прізвище з Telegram                              |
-| `username`     | Single line text     | @username без @                                  |
-| `phone`        | Phone number         | Заповнюється вручну або через бот                |
-| `city`         | Single line text     | Місто доставки                                   |
-| `bonus`        | Number (integer)     | Баланс ✦ бонусів, стартовий: 100                 |
-| `created_at`   | Created time         | Авто                                             |
+## 1. У @BotFather → Login Widget
 
-## 2️⃣ Налаштуй @BotFather
+**Redirect URIs** — мають бути обидва:
+- `https://beauty-shine-site.vercel.app/`
+- `https://beauty-shine-site.vercel.app/api/auth/telegram/callback`
 
-1. Відкрий `@BotFather` у Telegram
-2. Команда `/setdomain`
-3. Обери свого бота (`@beauty_shine_izmayil_bot`)
-4. Введи домен: `beauty-shine-site.vercel.app`
-5. Bot Father підтвердить — тепер Telegram Login Widget працюватиме на цьому домені
+**Trusted Origins**:
+- `https://beauty-shine-site.vercel.app` (без слешу)
 
-> ⚠️ Якщо домен буде інший (напр. кастомний `beautyandshine.ua`) — додай і його так само.
+**Client ID** — скопіюй (наприклад `8862382686`)
+**Client Secret** — скопіюй (натисни → копіюй цілком)
 
-## 3️⃣ Знайди свій ADMIN_TG_CHAT_ID
+---
 
-Це твій особистий Telegram ID. Без нього бот не зможе слати тобі сповіщення про замовлення.
+## 2. У Airtable — таблиця «Користувачі»
 
-**Спосіб 1:** напиши `/start` боту `@userinfobot` — він поверне твій ID.
-**Спосіб 2:** напиши боту `@RawDataBot` — те саме.
+База `appSUzIDbLksvmdkq`, нова таблиця «Користувачі»:
 
-Збережи це число (виглядає типу `123456789`).
+| Поле           | Тип                  |
+|----------------|----------------------|
+| `tg_user_id`   | Single line text     |
+| `first_name`   | Single line text     |
+| `last_name`    | Single line text     |
+| `username`     | Single line text     |
+| `phone`        | Phone number         |
+| `city`         | Single line text     |
+| `bonus`        | Number (integer)     |
 
-## 4️⃣ Додай нові Environment Variables у Vercel
+---
 
-`Project → Settings → Environment Variables` → додай **на Project-level** (не Shared):
+## 3. У Vercel → Environment Variables
 
-| Назва                              | Значення                                                 |
-|-----------------------------------|----------------------------------------------------------|
-| `TELEGRAM_BOT_TOKEN`              | токен з BotFather (формат `12345:AABBcc...`)             |
-| `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | `beauty_shine_izmayil_bot` (без @)                             |
-| `SESSION_SECRET`                  | будь-який довгий випадковий рядок (32+ символи)          |
-| `ADMIN_TG_CHAT_ID`                | твій Telegram ID з пункту 3                              |
+| Назва                       | Значення                                                                  |
+|----------------------------|---------------------------------------------------------------------------|
+| `TELEGRAM_CLIENT_ID`       | Client ID з BotFather (`8862382686`)                                      |
+| `TELEGRAM_CLIENT_SECRET`   | Client Secret з BotFather                                                 |
+| `TELEGRAM_REDIRECT_URI`    | `https://beauty-shine-site.vercel.app/api/auth/telegram/callback`         |
+| `TELEGRAM_BOT_TOKEN`       | Bot Token з BotFather (НЕ Client Secret — це різні речі!)                |
+| `SESSION_SECRET`           | Довгий випадковий рядок 32+ символів                                      |
+| `ADMIN_TG_CHAT_ID`         | Твій Telegram ID (з @userinfobot)                                         |
 
-Для генерації `SESSION_SECRET` можна використати `openssl rand -hex 32` або просто настукати щось довге.
+**Видали з Vercel** якщо було:
+- `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` — більше не потрібно
 
-> Старі env vars `AIRTABLE_TOKEN` і `AIRTABLE_BASE_ID` мають бути теж — вже мають бути від попередніх етапів.
+**Має лишитись:**
+- `AIRTABLE_TOKEN`
+- `AIRTABLE_BASE_ID`
 
-## 5️⃣ Перерозгорни
+---
 
-Після додавання env vars Vercel автоматично запропонує redeploy. Натискай **Redeploy** на останньому деплою.
+## 4. Передеплой Vercel
 
-## ✅ Що тепер працює
+Deployments → останній → ⋯ → Redeploy (without cache).
 
-- **Реальна авторизація через Telegram** — клієнт клацає кнопку віджета, Telegram запитує підтвердження, після того створюється запис у таблиці «Користувачі» з welcome-бонусом 100 ✦
-- **Сесія через cookie** — підписаний httpOnly cookie на 30 днів, безпечно
-- **Замовлення пишуться в Airtable** «Замовлення» — поля `order_no`, `user_id` (Telegram ID або "guest"), `customer_name`, `customer_phone`, `items`, `total`, `address`, `comment`, `date`
-- **Сповіщення тобі в бот** після кожного замовлення — повний текст з товарами, сумою, контактом клієнта
+---
 
-## ⚠️ Що залишилось зробити на стороні бота (Етап Г)
+## ✅ Як перевірити
 
-Цей сайт пише в Airtable і шле тобі сповіщення. Але **сам бот** все ще не показує користувачам:
-- їх дані при `/start` (ПІБ, телефон, @, бонуси)
-- кнопку «Мої замовлення» (останні за 7 днів)
-- кнопку «Мої записи» (майбутні)
-
-Це наступний крок — оновлення коду бота (`beauty_shine_bot` на Railway).
+1. Сайт → кнопка профілю у хедері → drawer відкриється
+2. Натисни **«Продовжити через Telegram»**
+3. Тебе редіректне на oauth.telegram.org з діалогом
+4. Введи номер, в Telegram отримаєш повідомлення «Login request from Beauty & Shine» — Confirm
+5. Тебе редіректне назад на сайт, профіль автоматично відкриється з твоїми даними + 100 ✦ бонусами
