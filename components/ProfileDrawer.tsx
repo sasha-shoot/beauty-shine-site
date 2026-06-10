@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUI } from "@/lib/ui-context";
 import { useUser } from "@/lib/user-context";
+import { TelegramLoginWidget } from "./TelegramLoginWidget";
 
 type Tab = "orders" | "visits" | "fav" | "data";
 
@@ -33,19 +34,11 @@ function fmtDate(iso: string): string {
 
 export function ProfileDrawer() {
   const { profileOpen, closeProfile } = useUI();
-  const { user, isHydrated, loginTelegram, loginPhone, logout } = useUser();
+  const { user, isHydrated, loginPhoneDemo, logout } = useUser();
   const [authStep, setAuthStep] = useState<"choice" | "otp">("choice");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [tab, setTab] = useState<Tab>("orders");
-
-  function handleTelegramLogin() {
-    loginTelegram({
-      name: "Олександр",
-      initial: "О",
-      username: "@sasha_shoot",
-    });
-  }
 
   function handlePhoneSubmit() {
     const cleaned = phone.replace(/\D/g, "");
@@ -61,7 +54,7 @@ export function ProfileDrawer() {
       alert("Введіть 4 цифри");
       return;
     }
-    loginPhone(phone);
+    loginPhoneDemo(phone);
     setAuthStep("choice");
   }
 
@@ -91,10 +84,7 @@ export function ProfileDrawer() {
                   <h4>Вітаємо у Beauty &amp; Shine</h4>
                   <p>Увійдіть, щоб зберігати обране, бачити історію покупок та накопичувати бонуси.</p>
                 </div>
-                <button className="pf-tg-btn" onClick={handleTelegramLogin}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4L3 11l5 2 2 6 3-4 4 3z"/></svg>
-                  Продовжити через Telegram
-                </button>
+                <TelegramLoginWidget />
                 <div className="pf-or"><span>або за номером телефону</span></div>
                 <div className="pf-field">
                   <label>Номер телефону</label>

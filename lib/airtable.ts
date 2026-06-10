@@ -248,3 +248,138 @@ export async function getVisitsByUser(userId: string): Promise<VisitRow[]> {
     .filter((v: VisitRow) => v.user_id === userId)
     .sort((a: VisitRow, b: VisitRow) => (b.date || "").localeCompare(a.date || ""));
 }
+
+
+/* ────────────────────────────────────────────────────────────────
+   КОРИСТУВАЧІ
+   Airtable таблиця «Користувачі»:
+   - tg_user_id (Single line text)  — Telegram ID, primary lookup
+   - first_name (Single line text)
+   - last_name (Single line text)
+   - username (Single line text)
+   - phone (Phone number)
+   - city (Single line text)
+   - bonus (Number)                 — баланс ✦ бонусів
+   - created_at (Created time)
+   - last_login (Last modified time або вручну при логіні)
+─────────────────────────────────────────────────────────────────── */
+
+export type UserRow = {
+  rec_id: string;
+  tg_user_id: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  phone: string;
+  city: string;
+  bonus: number;
+};
+
+export async function getUserByTgId(tgUserId: string): Promise<UserRow | null> {
+  if (!TOKEN || !BASE_ID) return null;
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("Користувачі")}?pageSize=100`,
+      { headers: { Authorization: `Bearer ${TOKEN}` }, cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const found = (data.records as any[]).find(
+      (r) => String(r.fields?.tg_user_id || "") === String(tgUserId)
+    );
+    if (!found) return null;
+    const f = found.fields || {};
+    return {
+      rec_id: found.id,
+      tg_user_id: String(f.tg_user_id || ""),
+      first_name: f.first_name || "",
+      last_name: f.last_name || "",
+      username: f.username || "",
+      phone: f.phone || "",
+      city: f.city || "",
+      bonus: Number(f.bonus) || 0,
+    };
+  } catch (e) {
+    console.error("getUserByTgId error:", e);
+    return null;
+  }
+}
+
+export async function createUser(data: {
+  tg_user_id: string;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  phone?: string;
+}): Promise<UserRow | null> {
+  if (!TOKEN || !BASE_ID) return null;
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("Користувачі")}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fields: {
+            tg_user_id: data.tg_user_id,
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            username: data.username || "",
+            phone: data.phone || "",
+            bonus: 100, // welcome-бонус
+          },
+        }),
+      }
+    );
+    if (!res.ok) {
+      console.error("createUser failed:", res.status, await res.text());
+      return null;
+    }
+    const rec = await res.json();
+    const f = rec.fields || {};
+    return {
+      rec_id: rec.id,
+      tg_user_id: String(f.tg_user_id || ""),
+      first_name: f.first_name || "",
+      last_name: f.last_name || "",
+      username: f.username || "",
+      phone: f.phone || "",
+      city: f.city || "",
+      bonus: Number(f.bonus) || 0,
+    };
+  } catch (e) {
+    console.error("createUser error:", e);
+    return null;
+  }
+}
+
+export async function updateUser(recId: string, fields: Partial<{
+  first_name: string;
+  last_name: string;
+  username: string;
+  phone: string;
+  city: string;
+  bonus: number;
+}>): Promise<boolean> {
+  if (!TOKEN || !BASE_ID) return false;
+  try {
+    const res = await fetch(
+      `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent("Користувачі")}/${recId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fields }),
+      }
+    );
+    return res.ok;
+  } catch (e) {
+    console.error("updateUser error:", e);
+    return false;
+  }
+}

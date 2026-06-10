@@ -3,78 +3,130 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type AuthUser = {
-  id: string;           // Telegram user ID або згенерований
-  name: string;         // Ім'я
-  initial: string;      // Перша літера для аватара
-  username?: string;    // @telegram username
-  phone?: string;       // +380... якщо вхід через телефон
+  id: string;
+  name: string;
+  initial: string;
+  username?: string;
+  phone?: string;
   city?: string;
   method: "tg" | "phone";
-  bonus: number;        // ✦ бонусів
+  bonus: number;
+};
+
+export type TelegramRawData = {
+  id: number;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
 };
 
 type UserContextType = {
   user: AuthUser | null;
   isHydrated: boolean;
-  loginTelegram: (data: Partial<AuthUser>) => void;
-  loginPhone: (phone: string) => void;
-  logout: () => void;
+  loading: boolean;
+  loginTelegram: (raw: TelegramRawData) => Promise<{ ok: boolean; error?: string }>;
+  loginPhoneDemo: (phone: string) => void;
+  logout: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
-const USER_KEY = "bs_user_v1";
+const PHONE_DEMO_KEY = "bs_phone_demo_v1";
+
+function toAuthUser(api: any): AuthUser {
+  const name = api.name || "Користувач";
+  return {
+    id: String(api.id || ""),
+    name,
+    initial: name[0]?.toUpperCase() || "B",
+    username: api.username || "",
+    phone: api.phone || "",
+    city: api.city || "",
+    method: (api.method === "phone" ? "phone" : "tg"),
+    bonus: Number(api.bonus) || 0,
+  };
+}
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  // При маунті: тягнемо поточного юзера з cookie через /api/me
+  // АБО з localStorage якщо це phone-демо-логін
+  async function refresh() {
     try {
-      const raw = localStorage.getItem(USER_KEY);
-      if (raw) setUser(JSON.parse(raw));
-    } catch {}
-    setIsHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-    try {
-      if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-      else localStorage.removeItem(USER_KEY);
-    } catch {}
-  }, [user, isHydrated]);
-
-  // ДЕМО-логін через Telegram. Реальна верифікація через bot token буде в Етапі В
-  function loginTelegram(data: Partial<AuthUser>) {
-    const name = data.name || "Користувач Telegram";
-    setUser({
-      id: data.id || `tg_${Date.now()}`,
-      name,
-      initial: name[0]?.toUpperCase() || "B",
-      username: data.username || "@user",
-      method: "tg",
-      bonus: 250, // демо-стартові бонуси
-      ...data,
-    });
+      // 1. Спершу пробуємо реальну Telegram-сесію
+      const res = await fetch("/api/me", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          setUser(toAuthUser(data.user));
+          return;
+        }
+      }
+      // 2. Якщо нема — пробуємо phone-демо з localStorage
+      const raw = localStorage.getItem(PHONE_DEMO_KEY);
+      if (raw) {
+        const u = JSON.parse(raw);
+        setUser(u);
+        return;
+      }
+      setUser(null);
+    } catch {
+      setUser(null);
+    }
   }
 
-  function loginPhone(phone: string) {
-    setUser({
+  useEffect(() => {
+    refresh().finally(() => setIsHydrated(true));
+  }, []);
+
+  async function loginTelegram(raw: TelegramRawData): Promise<{ ok: boolean; error?: string }> {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(raw),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        return { ok: false, error: data.error || "Помилка авторизації" };
+      }
+      setUser(toAuthUser(data.user));
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: "Мережева помилка" };
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function loginPhoneDemo(phone: string) {
+    const u: AuthUser = {
       id: `ph_${phone}`,
       name: "Клієнт",
       initial: "К",
       phone,
       method: "phone",
       bonus: 0,
-    });
+    };
+    try { localStorage.setItem(PHONE_DEMO_KEY, JSON.stringify(u)); } catch {}
+    setUser(u);
   }
 
-  function logout() {
+  async function logout() {
+    try { await fetch("/api/auth/logout", { method: "POST" }); } catch {}
+    try { localStorage.removeItem(PHONE_DEMO_KEY); } catch {}
     setUser(null);
   }
 
   return (
-    <UserContext.Provider value={{ user, isHydrated, loginTelegram, loginPhone, logout }}>
+    <UserContext.Provider value={{ user, isHydrated, loading, loginTelegram, loginPhoneDemo, logout, refresh }}>
       {children}
     </UserContext.Provider>
   );

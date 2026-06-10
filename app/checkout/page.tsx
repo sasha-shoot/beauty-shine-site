@@ -36,7 +36,7 @@ export default function CheckoutPage() {
       setForm((f) => ({ ...f, [k]: e.target.value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submitting) return;
 
@@ -47,16 +47,36 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
 
-    const orderNo = `BS-${String(Math.floor(Math.random() * 1000000)).padStart(6, "0")}`;
     try {
-      sessionStorage.setItem("bs_last_order", orderNo);
-    } catch {}
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: form.name,
+          customer_phone: form.phone,
+          city: form.city,
+          branch: form.branch,
+          comment: form.comment,
+          items: items.map((i) => ({ name: i.name, qty: i.quantity, price: i.price_uah })),
+          total: totalPrice,
+        }),
+      });
 
-    // TODO Etap 4: реальна відправка в Airtable «Замовлення» + повідомлення в Telegram-бот
-    // POST /api/orders { order_no, user_id, customer_name, customer_phone, items, total, address, comment }
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        alert(data.error || "Не вдалося оформити замовлення. Спробуйте ще раз.");
+        setSubmitting(false);
+        return;
+      }
 
-    clear();
-    router.push("/confirmation");
+      try { sessionStorage.setItem("bs_last_order", data.order_no); } catch {}
+      clear();
+      router.push("/confirmation");
+    } catch (err) {
+      console.error(err);
+      alert("Мережева помилка. Спробуйте ще раз.");
+      setSubmitting(false);
+    }
   }
 
   if (!isHydrated) return null;
