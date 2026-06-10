@@ -3,7 +3,7 @@
  *
  * Env vars (Vercel):
  *   TELEGRAM_BOT_TOKEN     — токен бота (НЕ викладати у клієнт)
- *   TELEGRAM_BOT_USERNAME  — наприклад "beautyandshine_bot" (без @)
+ *   TELEGRAM_BOT_USERNAME  — наприклад "beauty_shine_izmayil_bot" (без @)
  *   SESSION_SECRET         — будь-який довгий випадковий рядок для підпису cookie
  */
 

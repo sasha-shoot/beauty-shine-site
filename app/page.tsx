@@ -239,7 +239,7 @@ export default async function HomePage() {
             <div className="nl-copy">
               <h2>Слідкуй за нами, де зручно!<br/><span className="nl-accent">прямо в Telegram</span></h2>
               <p>Записуйся через нашого бота та отримуй знижку на перший запис. Для наших постійних клієнтів є зручна програма лояльності. Більше дізнаєшся в нашому боті!</p>
-              <a className="nl-cta" href="https://t.me/beautyandshine_bot" target="_blank" rel="noopener">
+              <a className="nl-cta" href="https://t.me/beauty_shine_izmayil_bot" target="_blank" rel="noopener">
                 <span className="nl-cta-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4L3 11l5 2 2 6 3-4 4 3z"/></svg></span>
                 Перейти в Telegram-бот
                 <svg className="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

@@ -19,7 +19,7 @@
 
 1. Відкрий `@BotFather` у Telegram
 2. Команда `/setdomain`
-3. Обери свого бота (`@beautyandshine_bot`)
+3. Обери свого бота (`@beauty_shine_izmayil_bot`)
 4. Введи домен: `beauty-shine-site.vercel.app`
 5. Bot Father підтвердить — тепер Telegram Login Widget працюватиме на цьому домені
 
@@ -41,7 +41,7 @@
 | Назва                              | Значення                                                 |
 |-----------------------------------|----------------------------------------------------------|
 | `TELEGRAM_BOT_TOKEN`              | токен з BotFather (формат `12345:AABBcc...`)             |
-| `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | `beautyandshine_bot` (без @)                             |
+| `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | `beauty_shine_izmayil_bot` (без @)                             |
 | `SESSION_SECRET`                  | будь-який довгий випадковий рядок (32+ символи)          |
 | `ADMIN_TG_CHAT_ID`                | твій Telegram ID з пункту 3                              |
 
