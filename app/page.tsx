@@ -143,6 +143,8 @@ export default async function HomePage() {
               shape="rounded"
               radius={24}
               placeholder="Фото салону"
+              src="/designer/studio.jpg"
+              alt="Інтер'єр студії Beauty &amp; Shine"
             />
           </div>
         </section>
@@ -191,6 +193,7 @@ export default async function HomePage() {
               name="Ірина"
               role="Майстер манікюру та догляду за руками"
               experience="7 років досвіду"
+              photoSrc="/designer/iryna.jpg"
               education={[
                 "Академія нігтьового дизайну «NailArt», Київ — повний курс",
                 "Курс «Комбінований та апаратний манікюр», KODI Professional",
@@ -250,7 +253,7 @@ export default async function HomePage() {
             </div>
             <div className="nl-phone">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="nl-screen" src="/designer/tg-phone.png" alt="Telegram-бот Beauty & Shine" />
+              <img className="nl-screen" src="/designer/tg-phone.webp" alt="Telegram-бот Beauty & Shine" />
             </div>
           </div>
         </section>
