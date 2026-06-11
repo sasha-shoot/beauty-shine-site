@@ -253,7 +253,7 @@ export default async function HomePage() {
             </div>
             <div className="nl-phone">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="nl-screen" src="/designer/tg-phone.webp" alt="Telegram-бот Beauty & Shine" />
+              <img className="nl-screen" src="/designer/tg-phone.png" alt="Telegram-бот Beauty &amp; Shine" loading="lazy" />
             </div>
           </div>
         </section>
