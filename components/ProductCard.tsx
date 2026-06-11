@@ -6,7 +6,6 @@ import { useCart, type CartItem } from "@/lib/cart-context";
 import type { Product } from "@/lib/airtable";
 import { ImageSlot } from "./ImageSlot";
 
-// Бонусний рахунок: 1 ✦ = 25 грн (~4% кешбек)
 function bonusFor(price: number) {
   return Math.floor(price / 25);
 }
@@ -22,8 +21,9 @@ function getFavs(): Set<string> {
   return new Set();
 }
 
-function setFavs(s: Set<string>) {
+function saveFavs(s: Set<string>) {
   try { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); } catch {}
+  window.dispatchEvent(new Event("bs:fav-changed"));
 }
 
 export function ProductCard({ product }: { product: Product }) {
@@ -34,6 +34,9 @@ export function ProductCard({ product }: { product: Product }) {
   useEffect(() => {
     setFavsState(getFavs());
     setHydrated(true);
+    const onChange = () => setFavsState(getFavs());
+    window.addEventListener("bs:fav-changed", onChange);
+    return () => window.removeEventListener("bs:fav-changed", onChange);
   }, []);
 
   const isFav = favs.has(product.slug);
@@ -59,16 +62,23 @@ export function ProductCard({ product }: { product: Product }) {
     const next = new Set(favs);
     if (next.has(product.slug)) next.delete(product.slug);
     else next.add(product.slug);
-    setFavs(next);
     setFavsState(next);
-    window.dispatchEvent(new Event("bs:fav-changed"));
+    saveFavs(next);
   }
+
+  const href = `/product/${product.slug}`;
 
   return (
     <article className="card">
-      <Link href={`/product/${product.slug}`} className="card-img" style={{ display: "block" }}>
-        <svg className="corner-star" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
-        <div className="bottle">
+      {/* card-img — НЕ Link, щоб heart кнопка не була вкладена. Натомість Link тільки на bottle і corner-star */}
+      <div className="card-img" style={{ position: "relative" }}>
+        <Link href={href} className="card-img-link" aria-label={product.name} style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+          <span className="sr-only">{product.name}</span>
+        </Link>
+        <svg className="corner-star" viewBox="0 0 100 100" style={{ position: "relative", zIndex: 2 }}>
+          <path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/>
+        </svg>
+        <div className="bottle" style={{ position: "relative", zIndex: 2, pointerEvents: "none" }}>
           <ImageSlot
             shape="rounded"
             radius={18}
@@ -80,15 +90,18 @@ export function ProductCard({ product }: { product: Product }) {
         <button
           className={`heart ${hydrated && isFav ? "on" : ""}`}
           onClick={toggleFav}
-          aria-label="В обране"
+          aria-label={hydrated && isFav ? "Прибрати з обраного" : "Додати в обране"}
           type="button"
+          style={{ position: "relative", zIndex: 3 }}
         >
-          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" fill={hydrated && isFav ? "currentColor" : "none"}>
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </button>
-        <span className="badge-brand">{product.brand}</span>
-      </Link>
+        <span className="badge-brand" style={{ position: "relative", zIndex: 2, pointerEvents: "none" }}>{product.brand}</span>
+      </div>
       <div className="card-body">
-        <Link href={`/product/${product.slug}`} style={{ display: "block" }}>
+        <Link href={href} style={{ display: "block" }}>
           <div className="card-cat">{product.category}</div>
           <div className="card-name">{product.name}</div>
         </Link>

@@ -196,7 +196,7 @@ async function fetchTable(tableName: string, filterUser?: string) {
   try {
     const res = await fetch(baseUrl, {
       headers: { Authorization: `Bearer ${TOKEN}` },
-      next: { revalidate: 30 },
+      cache: "no-store",
     });
     if (!res.ok) {
       console.error(`${tableName} ${res.status}: ${await res.text()}`);
@@ -211,24 +211,31 @@ async function fetchTable(tableName: string, filterUser?: string) {
 
 export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
   const data = await fetchTable("Замовлення");
-  return (data.records as any[])
-    .map((rec: any): OrderRow => {
-      const f = rec.fields || {};
-      return {
-        rec_id: rec.id,
-        order_no: f.order_no || "",
-        user_id: String(f.user_id || ""),
-        customer_name: f.customer_name || "",
-        customer_phone: f.customer_phone || "",
-        items: f.items || "",
-        total: Number(f.total) || 0,
-        address: f.address || "",
-        comment: f.comment || "",
-        date: f.date || rec.createdTime || "",
-      };
-    })
-    .filter((o: OrderRow) => o.user_id === userId)
-    .sort((a: OrderRow, b: OrderRow) => (b.date || "").localeCompare(a.date || ""));
+  const all = (data.records as any[]).map((rec: any): OrderRow => {
+    const f = rec.fields || {};
+    return {
+      rec_id: rec.id,
+      order_no: f.order_no || "",
+      user_id: String(f.user_id || ""),
+      customer_name: f.customer_name || "",
+      customer_phone: f.customer_phone || "",
+      items: f.items || "",
+      total: Number(f.total) || 0,
+      address: f.address || "",
+      comment: f.comment || "",
+      date: f.date || rec.createdTime || "",
+    };
+  });
+
+  // Діагностика: яких user_id маємо vs за яким фільтруємо
+  const uniqueUserIds = Array.from(new Set(all.map((o) => o.user_id))).slice(0, 10);
+  console.log(`[getOrdersByUser] looking for "${userId}" (type=${typeof userId}, len=${userId.length})`);
+  console.log(`[getOrdersByUser] total records=${all.length}, unique user_ids in DB:`, JSON.stringify(uniqueUserIds));
+
+  const filtered = all.filter((o) => o.user_id === userId);
+  console.log(`[getOrdersByUser] after filter: ${filtered.length} matches`);
+
+  return filtered.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 }
 
 export async function getVisitsByUser(userId: string): Promise<VisitRow[]> {

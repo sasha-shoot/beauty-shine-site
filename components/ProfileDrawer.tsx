@@ -154,24 +154,25 @@ export function ProfileDrawer() {
 
 function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => void; onLogout: () => void }) {
   const { user } = useUser();
+  const { profileOpen } = useUI();
   const [orders, setOrders] = useState<Order[]>([]);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState({ orders: true, visits: true });
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !profileOpen) return;
     setLoading({ orders: true, visits: true });
-    fetch(`/api/me/orders?user_id=${encodeURIComponent(user.id)}`)
+    fetch(`/api/me/orders?user_id=${encodeURIComponent(user.id)}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
       .catch(() => setOrders([]))
       .finally(() => setLoading((l) => ({ ...l, orders: false })));
-    fetch(`/api/me/visits?user_id=${encodeURIComponent(user.id)}`)
+    fetch(`/api/me/visits?user_id=${encodeURIComponent(user.id)}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setVisits(d.visits || []))
       .catch(() => setVisits([]))
       .finally(() => setLoading((l) => ({ ...l, visits: false })));
-  }, [user]);
+  }, [user, profileOpen]);
 
   if (!user) return null;
 
