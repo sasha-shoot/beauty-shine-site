@@ -280,6 +280,7 @@ export type UserRow = {
   phone: string;
   city: string;
   bonus: number;
+  picture: string;
 };
 
 export async function getUserByTgId(tgUserId: string): Promise<UserRow | null> {
@@ -305,6 +306,7 @@ export async function getUserByTgId(tgUserId: string): Promise<UserRow | null> {
       phone: f.phone || "",
       city: f.city || "",
       bonus: Number(f.bonus) || 0,
+      picture: f.picture || "",
     };
   } catch (e) {
     console.error("getUserByTgId error:", e);
@@ -318,6 +320,7 @@ export async function createUser(data: {
   last_name?: string;
   username?: string;
   phone?: string;
+  picture?: string;
 }): Promise<UserRow | null> {
   if (!TOKEN || !BASE_ID) return null;
   try {
@@ -336,6 +339,7 @@ export async function createUser(data: {
             last_name: data.last_name || "",
             username: data.username || "",
             phone: data.phone || "",
+            picture: data.picture || "",
             bonus: 100, // welcome-бонус
           },
         }),
@@ -356,6 +360,7 @@ export async function createUser(data: {
       phone: f.phone || "",
       city: f.city || "",
       bonus: Number(f.bonus) || 0,
+      picture: f.picture || "",
     };
   } catch (e) {
     console.error("createUser error:", e);
@@ -370,6 +375,7 @@ export async function updateUser(recId: string, fields: Partial<{
   phone: string;
   city: string;
   bonus: number;
+  picture: string;
 }>): Promise<boolean> {
   if (!TOKEN || !BASE_ID) return false;
   try {

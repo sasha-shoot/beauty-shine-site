@@ -9,6 +9,7 @@ export type AuthUser = {
   username?: string;
   phone?: string;
   city?: string;
+  picture?: string;
   method: "tg" | "phone";
   bonus: number;
 };
@@ -33,6 +34,7 @@ function toAuthUser(api: any): AuthUser {
     username: api.username || "",
     phone: api.phone || "",
     city: api.city || "",
+    picture: api.picture || "",
     method: (api.method === "phone" ? "phone" : "tg"),
     bonus: Number(api.bonus) || 0,
   };

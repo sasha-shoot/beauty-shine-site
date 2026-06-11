@@ -183,7 +183,19 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
   return (
     <div className="pf-pad">
       <div className="pf-card">
-        <div className="pf-av-lg">{user.initial}</div>
+        <div className="pf-av-lg" style={user.picture ? { padding: 0, overflow: "hidden" } : undefined}>
+          {user.picture ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.picture}
+              alt={user.name}
+              referrerPolicy="no-referrer"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          ) : (
+            user.initial
+          )}
+        </div>
         <div className="pf-id">
           <b>{user.name}</b>
           <div>

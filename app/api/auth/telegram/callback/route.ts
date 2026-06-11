@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
   const lastName = rest.join(" ");
   const username = claims.preferred_username || "";
   const phone = claims.phone_number || "";
+  const picture = claims.picture || "";
 
   let user = await getUserByTgId(tgUserId);
   if (!user) {
@@ -63,14 +64,16 @@ export async function GET(req: NextRequest) {
       last_name: lastName,
       username,
       phone,
+      picture,
     });
   } else {
-    // Оновлюємо актуальні дані з Telegram (раптом юзер змінив username/name)
+    // Оновлюємо актуальні дані з Telegram (раптом юзер змінив username/name/аватар)
     const updates: any = {};
     if (firstName && user.first_name !== firstName) updates.first_name = firstName;
     if (lastName  && user.last_name !== lastName)   updates.last_name = lastName;
     if (username  && user.username !== username)    updates.username = username;
     if (phone     && !user.phone)                   updates.phone = phone;
+    if (picture   && user.picture !== picture)      updates.picture = picture;
     if (Object.keys(updates).length > 0) {
       await updateUser(user.rec_id, updates);
       Object.assign(user, updates);

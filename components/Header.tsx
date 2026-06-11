@@ -50,7 +50,19 @@ export function Header() {
               aria-label="Профіль"
             >
               <svg className="pf-ic-default" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-              <span className="pf-ic-avatar">{userHydrated && user ? user.initial : ""}</span>
+              <span className="pf-ic-avatar" style={userHydrated && user?.picture ? { padding: 0, overflow: "hidden" } : undefined}>
+                {userHydrated && user?.picture ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    referrerPolicy="no-referrer"
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                ) : (
+                  userHydrated && user ? user.initial : ""
+                )}
+              </span>
             </button>
             <button onClick={openCart} className="cart-pill" aria-label="Кошик" style={{ width: 124 }}>
               <span className="cp-ic">

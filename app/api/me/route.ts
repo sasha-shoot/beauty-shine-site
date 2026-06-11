@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
       phone: user.phone,
       city: user.city,
       bonus: user.bonus,
+      picture: user.picture,
       method: "tg",
     },
   });
