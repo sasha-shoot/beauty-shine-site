@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useUI } from "@/lib/ui-context";
 import { useUser } from "@/lib/user-context";
 import { TelegramLoginWidget } from "./TelegramLoginWidget";
@@ -277,13 +278,7 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
           )
         )}
 
-        {tab === "fav" && (
-          <EmptyState
-            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg>}
-            title="Список обраного порожній"
-            text="Тисніть ♥ на товарах у каталозі — і вони збережуться тут."
-          />
-        )}
+        {tab === "fav" && <FavoritesTab />}
 
         {tab === "data" && (
           <div>
@@ -318,6 +313,162 @@ function LoadingHint() {
   return (
     <div className="pf-empty">
       <p style={{ color: "var(--ink-3)", fontSize: 13 }}>Завантажуємо…</p>
+    </div>
+  );
+}
+
+// ── ВКЛАДКА «ОБРАНЕ» ───────────────────────────────────────
+type FavProduct = {
+  slug: string;
+  name: string;
+  brand: string;
+  category: string;
+  image: string;
+  price_uah: number;
+  in_stock: boolean;
+};
+
+const FAV_KEY = "bs_fav_v1";
+
+function readFavs(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(FAV_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function FavoritesTab() {
+  const { closeProfile } = useUI();
+  const [favSlugs, setFavSlugs] = useState<string[]>([]);
+  const [products, setProducts] = useState<FavProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setFavSlugs(readFavs());
+    setHydrated(true);
+
+    fetch("/api/products", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setProducts(d.products || []))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+
+    const onChange = () => setFavSlugs(readFavs());
+    window.addEventListener("bs:fav-changed", onChange);
+    return () => window.removeEventListener("bs:fav-changed", onChange);
+  }, []);
+
+  function removeFav(slug: string) {
+    const next = favSlugs.filter((s) => s !== slug);
+    setFavSlugs(next);
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(next)); } catch {}
+    window.dispatchEvent(new Event("bs:fav-changed"));
+  }
+
+  if (!hydrated || loading) return <LoadingHint />;
+
+  const favSet = new Set(favSlugs);
+  const favProducts = products.filter((p) => favSet.has(p.slug));
+
+  if (favProducts.length === 0) {
+    return (
+      <EmptyState
+        icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.5 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg>}
+        title="Список обраного порожній"
+        text="Тисніть ♥ на товарах у каталозі — і вони збережуться тут."
+      />
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {favProducts.map((p) => (
+        <div
+          key={p.slug}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: 10,
+            background: "rgba(248, 244, 255, 0.6)",
+            borderRadius: 14,
+            border: "1px solid rgba(122, 71, 184, 0.1)",
+          }}
+        >
+          <Link
+            href={`/product/${p.slug}`}
+            onClick={closeProfile}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              flex: 1,
+              minWidth: 0,
+              textDecoration: "none",
+              color: "inherit",
+            }}
+          >
+            <div
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 10,
+                overflow: "hidden",
+                flexShrink: 0,
+                background: "linear-gradient(135deg, var(--lavender) 0%, var(--lavender-2) 100%)",
+              }}
+            >
+              {p.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              ) : null}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, color: "var(--purple-deep)", fontWeight: 700, letterSpacing: ".05em", textTransform: "uppercase", marginBottom: 2 }}>
+                {p.brand}
+              </div>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--ink)", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any }}>
+                {p.name}
+              </div>
+              <div style={{ marginTop: 4, fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: 15, color: "var(--purple-deep)" }}>
+                {p.price_uah ? `${p.price_uah} грн` : "за запитом"}
+              </div>
+            </div>
+          </Link>
+          <button
+            onClick={() => removeFav(p.slug)}
+            aria-label="Прибрати з обраного"
+            type="button"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              border: "none",
+              background: "rgba(122, 71, 184, 0.08)",
+              color: "var(--purple-deep)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <line x1="6" y1="6" x2="18" y2="18"/>
+              <line x1="18" y1="6" x2="6" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      ))}
+      <p style={{ marginTop: 8, fontSize: 12, color: "var(--ink-3)", textAlign: "center" }}>
+        {favProducts.length} {favProducts.length === 1 ? "товар у обраному" : favProducts.length < 5 ? "товари в обраному" : "товарів у обраному"}
+      </p>
     </div>
   );
 }
