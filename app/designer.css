@@ -102,7 +102,7 @@
   .icon-btn svg{width:22px;height:22px;stroke:var(--ink);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
   /* Cart pill */
-  .cart-pill{
+  .cart-pill{width:124px;
     display:inline-flex;align-items:center;gap:9px;padding:9px 9px 9px 18px;
     background:#fff;border-radius:var(--r-full);font-weight:600;font-size:14.5px;color:var(--ink);
     box-shadow:0 8px 22px -12px rgba(22,33,62,.32);transition:transform .15s var(--ease),box-shadow .25s;
@@ -1220,4 +1220,116 @@
 img { content-visibility: auto; }
 @media (prefers-reduced-motion: reduce) {
   .reveal, .card, .float-card { animation: none !important; transition: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   МОБІЛЬНИЙ ХЕДЕР ≤520px: лого-іконка (без слова), бургер,
+   профіль, кошик-іконка з лічильником. Все влазить у 375px.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 520px) {
+  /* Ховаємо текст лого — тільки іконка */
+  .logo-word { display: none; }
+  .logo-mark img { height: 30px !important; width: 38px !important; }
+
+  /* Кошик: тільки іконка + лічильник, без слова */
+  .cart-pill { padding: 0; width: 42px !important; height: 42px; min-width: 42px;
+    border-radius: 50%; justify-content: center; gap: 0; }
+  .cart-pill .cp-label { display: none; }
+  .cart-pill .cart-count {
+    position: absolute; top: -4px; right: -4px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    font-size: 10.5px; line-height: 18px; border-radius: 9px;
+  }
+  .cart-pill { position: relative; }
+
+  .header-right { gap: 6px; }
+  .header-inner { gap: 8px; }
+}
+
+/* Hero float-картки на дуже малих: статичний стек замість absolute,
+   щоб не наїжджали одна на одну і на фото */
+@media (max-width: 430px) {
+  .hero-visual { display: flex; flex-direction: column; gap: 14px; }
+  .hero-cutout-wrap { position: relative; margin: 0 auto; }
+  .float-card {
+    position: static !important;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  /* Контейнер карток під фото у 2 колонки на ширших, 1 на вузьких */
+  .fc-1, .fc-2, .fc-3 { left: auto; right: auto; top: auto; bottom: auto; }
+  .hero-spark { display: none; }
+}
+
+/* Меню: футер-блок з Telegram-кнопкою */
+.menu-foot { margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(122,71,184,.12); }
+.menu-tg {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; border-radius: var(--r-md);
+  background: var(--lavender); color: var(--purple-deep);
+  font-weight: 600; font-size: 15px;
+}
+.menu-tg svg { width: 20px; height: 20px; }
+
+/* Touch-friendly кількість на сторінці товару */
+@media (max-width: 430px) {
+  .qty-control button { width: 44px; height: 44px; }
+  .prod-actions .btn { width: 100%; min-height: 48px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   МОБІЛЬНИЙ ХЕДЕР ≤560px: тільки лого-іконка + бургер + профіль
+   + компактний кошик. Назва сайту ховається.
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  .logo-word { display: none; }
+  .header-inner { gap: 6px; }
+  .cart-pill { width: auto; padding: 9px 12px; gap: 6px; }
+  .cart-pill .cp-label { display: none; }
+  .icon-btn, .burger, .profile-btn { width: 42px; height: 42px; flex-shrink: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOAT-КАРТКИ на ≤430px: статичний стовпчик ПІД фото замість
+   абсолютних позицій (вони злипалися й перекривали контент).
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 430px) {
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .hero-visual::before { display: none; }
+  .hero-spark { display: none; }
+  .hero-cutout-wrap { order: 0; }
+  .float-card {
+    position: static !important;
+    animation: none !important;
+    width: 100%;
+    max-width: 340px;
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+  .float-card.fc-1 { order: 1; margin-top: 18px; }
+  .float-card.fc-2 { order: 2; }
+  .float-card.fc-3 { order: 3; }
+}
+
+/* ═══ КАТАЛОГ на мобілці: чипи скролляться горизонтально ═══ */
+@media (max-width: 560px) {
+  .tools { padding: 14px; gap: 10px; }
+  .search { min-width: 100%; }
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+    padding: 2px 0 6px;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; white-space: nowrap; min-height: 38px; }
+  .sort { width: 100%; min-height: 44px; }
+  .catalog-head { padding: 20px 0 12px; }
 }
