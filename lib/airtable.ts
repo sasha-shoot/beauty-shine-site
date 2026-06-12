@@ -239,20 +239,29 @@ export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
 }
 
 export async function getVisitsByUser(userId: string): Promise<VisitRow[]> {
-  const data = await fetchTable("Візити");
+  // Таблиця «Записи» — її заповнює Telegram-бот при записі на процедуру.
+  // Поля: ChatID (telegram id), Послуга, Деталі, Дата (YYYY-MM-DD), Час, Ціна
+  const data = await fetchTable("Записи");
   return (data.records as any[])
     .map((rec: any): VisitRow => {
       const f = rec.fields || {};
+      const service = f["Послуга"] || "";
+      // Майстра в таблиці нема — виводимо з послуги
+      const master =
+        service.toLowerCase().includes("манік") ? "Ірина" :
+        service ? "Іван" : "";
+      const date = f["Дата"] || "";
+      const time = f["Час"] || "";
       return {
         rec_id: rec.id,
-        user_id: String(f.user_id || ""),
-        service: f.service || "",
-        master: f.master || "",
-        date: f.date || "",
-        price: Number(f.price) || 0,
+        user_id: String(f["ChatID"] || "").trim(),
+        service: f["Деталі"] && f["Деталі"] !== service ? `${service} · ${f["Деталі"]}` : service,
+        master,
+        date: time ? `${date}T${time}` : date,
+        price: Number(f["Ціна"]) || 0,
       };
     })
-    .filter((v: VisitRow) => v.user_id === userId)
+    .filter((v: VisitRow) => v.user_id === String(userId).trim())
     .sort((a: VisitRow, b: VisitRow) => (b.date || "").localeCompare(a.date || ""));
 }
 
