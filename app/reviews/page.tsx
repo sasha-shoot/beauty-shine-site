@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ImageSlot } from "@/components/ImageSlot";
+import { LiveReviews } from "@/components/LiveReviews";
 
 export const metadata = { title: "Відгуки — Beauty & Shine" };
 
@@ -39,6 +40,8 @@ export default function ReviewsPage() {
             </div>
           </div>
         </div>
+
+        <LiveReviews />
 
         <div className="rv-wall reveal">
           {REVIEWS.map((r, i) => (

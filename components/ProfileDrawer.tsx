@@ -155,7 +155,7 @@ export function ProfileDrawer() {
 
 function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => void; onLogout: () => void }) {
   const { user } = useUser();
-  const { profileOpen } = useUI();
+  const { profileOpen, closeProfile } = useUI();
   const [orders, setOrders] = useState<Order[]>([]);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState({ orders: true, visits: true });
@@ -174,6 +174,21 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
       .catch(() => setVisits([]))
       .finally(() => setLoading((l) => ({ ...l, visits: false })));
   }, [user, profileOpen]);
+
+  const cancelVisit = async (recId: string) => {
+    if (!confirm("Скасувати цей запис? Майстер отримає повідомлення.")) return;
+    try {
+      const res = await fetch(`/api/me/visits?id=${encodeURIComponent(recId)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.ok) {
+        setVisits((prev) => prev.filter((v) => v.rec_id !== recId));
+      } else {
+        alert(data.error || "Не вдалося скасувати запис");
+      }
+    } catch {
+      alert("Помилка з'єднання, спробуйте ще раз");
+    }
+  };
 
   if (!user) return null;
 
@@ -273,17 +288,30 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
                 <b className="num">{visits.reduce((s, v) => s + v.price, 0)} грн</b>
               </div>
               {visits.map((v) => (
-                <div key={v.rec_id} className="pf-visit">
-                  <div className="pf-visit-ic">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 2l2.8 6.6 7.2.6-5.5 4.7 1.7 7-6.2-3.8-6.2 3.8 1.7-7L1.7 9.2 9 8.6z"/>
-                    </svg>
+                <div key={v.rec_id} className="pf-visit pf-visit-col">
+                  <div className="pf-visit-main">
+                    <div className="pf-visit-ic">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2l2.8 6.6 7.2.6-5.5 4.7 1.7 7-6.2-3.8-6.2 3.8 1.7-7L1.7 9.2 9 8.6z"/>
+                      </svg>
+                    </div>
+                    <div className="pf-visit-info">
+                      <b>{v.service}</b>
+                      <span>{fmtDate(v.date)} · майстер {v.master}</span>
+                    </div>
+                    <span className="pf-visit-price num">{v.price > 0 ? `${v.price} грн` : "—"}</span>
                   </div>
-                  <div className="pf-visit-info">
-                    <b>{v.service}</b>
-                    <span>{fmtDate(v.date)} · майстер {v.master}</span>
+                  <div className="pf-visit-actions">
+                    <a
+                      className="pf-visit-btn review"
+                      href={`/reviews?tag=${encodeURIComponent("Майстер " + v.master)}`}
+                      onClick={closeProfile}
+                    >✍️ Залишити відгук</a>
+                    <button
+                      className="pf-visit-btn cancel"
+                      onClick={() => cancelVisit(v.rec_id)}
+                    >Скасувати запис</button>
                   </div>
-                  <span className="pf-visit-price num">{v.price > 0 ? `${v.price} грн` : "—"}</span>
                 </div>
               ))}
             </>

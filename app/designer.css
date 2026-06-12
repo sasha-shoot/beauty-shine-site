@@ -1333,3 +1333,78 @@ img { content-visibility: auto; }
   .sort { width: 100%; min-height: 44px; }
   .catalog-head { padding: 20px 0 12px; }
 }
+
+/* ═══ ЖИВІ ВІДГУКИ: форма + аватарки ═══ */
+.rv-form-wrap { margin: 18px 0 26px; }
+.rv-cta-login {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  background: var(--lavender); border-radius: 22px; padding: 20px 24px;
+}
+.rv-cta-login p { margin: 0; font-weight: 600; color: var(--ink-2); }
+.rv-form { background: #fff; border-radius: 22px; padding: 22px; box-shadow: 0 10px 30px rgba(122,71,184,.08); }
+.rv-form h3 { margin: 0 0 14px; font-family: 'Playfair Display', serif; }
+.rv-form-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.rv-rating-pick { display: flex; gap: 2px; }
+.rv-star { font-size: 26px; line-height: 1; color: #d8d2e8; background: none; border: none; cursor: pointer; padding: 2px; transition: color .15s, transform .15s; }
+.rv-star.on { color: var(--yellow, #f4c542); }
+.rv-star:hover { transform: scale(1.15); }
+.rv-tag-select {
+  padding: 9px 14px; border-radius: var(--r-full); border: 1.5px solid var(--lavender);
+  background: var(--lavender); font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+}
+.rv-textarea {
+  width: 100%; border: 1.5px solid var(--lavender); border-radius: 16px;
+  padding: 12px 14px; font: inherit; font-size: 14.5px; resize: vertical; min-height: 96px;
+}
+.rv-textarea:focus { outline: none; border-color: var(--purple); }
+.rv-form-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.rv-count { font-size: 12px; color: var(--ink-3); }
+.rv-msg { font-size: 13px; color: #c0392b; font-weight: 600; }
+.rv-form-btns { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.rv-av-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; display: block; }
+@media (max-width: 560px) {
+  .rv-cta-login { flex-direction: column; align-items: stretch; text-align: center; }
+  .rv-form { padding: 16px; }
+  .rv-form-btns { margin-left: 0; width: 100%; }
+  .rv-form-btns .btn { flex: 1; }
+}
+
+/* ═══ Кнопки під записом у профілі ═══ */
+.pf-visit-col { flex-direction: column; align-items: stretch; gap: 10px; }
+.pf-visit-main { display: flex; align-items: center; gap: 12px; }
+.pf-visit-actions { display: flex; gap: 8px; }
+.pf-visit-btn {
+  flex: 1; text-align: center; padding: 9px 12px; border-radius: var(--r-full);
+  font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+  transition: filter .15s; text-decoration: none; display: inline-block;
+}
+.pf-visit-btn.review { background: var(--lavender); color: var(--purple-deep); }
+.pf-visit-btn.cancel { background: #fdecea; color: #c0392b; }
+.pf-visit-btn:hover { filter: brightness(.96); }
+
+/* ═══ Теги-чипи у формі відгуку ═══ */
+.rv-tag-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.rv-chip {
+  padding: 8px 14px; border-radius: var(--r-full); border: 1.5px solid var(--lavender);
+  background: var(--lavender); font-size: 13px; font-weight: 600; color: var(--ink-2);
+  cursor: pointer; transition: all .15s;
+}
+.rv-chip.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+.rv-tags-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+
+/* ═══ Відгуки на сторінці товару ═══ */
+.prod-reviews { margin-top: 44px; }
+.pr-avg { color: var(--purple); white-space: nowrap; }
+.pr-list { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.pr-item {
+  display: flex; gap: 14px; background: #fff; border-radius: 18px;
+  padding: 16px 18px; box-shadow: 0 6px 20px rgba(122,71,184,.06);
+}
+.pr-item-body { flex: 1; min-width: 0; }
+.pr-item-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.pr-item-body p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+@media (max-width: 560px) {
+  .pf-visit-actions { flex-direction: column; }
+  .pr-item { padding: 14px; }
+}

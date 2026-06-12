@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug, getAllProducts } from "@/lib/airtable";
 import { ImageSlot } from "@/components/ImageSlot";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductReviews } from "@/components/ProductReviews";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 
 export const revalidate = 60;
@@ -54,6 +55,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
             </div>
           </section>
         )}
+
+        <ProductReviews productId={product.rec_id} productName={product.name} />
       </div>
     </section>
   );
