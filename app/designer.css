@@ -1408,3 +1408,5 @@ img { content-visibility: auto; }
   .pf-visit-actions { flex-direction: column; }
   .pr-item { padding: 14px; }
 }
+
+.pf-visit-btn.disabled { opacity: .55; cursor: default; pointer-events: none; }

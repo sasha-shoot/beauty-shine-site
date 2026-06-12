@@ -49,16 +49,26 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Це не ваш запис" }, { status: 403 });
   }
 
-  // 2. Видаляємо
-  const del = await fetch(`${base}/${recId}`, { method: "DELETE", headers: h });
+  // 2. SOFT-DELETE: ховаємо з сайту, запис лишається в системі для майстрів
+  const del = await fetch(`${base}/${recId}`, {
+    method: "PATCH",
+    headers: { ...h, "Content-Type": "application/json" },
+    body: JSON.stringify({ fields: { "Приховано": true } }),
+  });
   if (!del.ok) {
-    return NextResponse.json({ ok: false, error: "Не вдалося скасувати" }, { status: 502 });
+    console.error("hide visit error:", del.status, await del.text());
+    return NextResponse.json({ ok: false, error: "Не вдалося видалити з архіву" }, { status: 502 });
   }
 
-  // 3. Сповіщаємо майстра в Telegram (fire-and-forget)
+  // 3. Якщо візит ще НЕ відбувся — це скасування, майстер має знати.
+  //    Минулі записи ховаються тихо (чистка архіву).
+  const f0 = rec.fields || {};
+  const visitStart = new Date(`${f0["Дата"]}T${f0["Час"] || "00:00"}`);
+  const isFuture = !isNaN(visitStart.getTime()) && visitStart.getTime() > Date.now();
+
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   const ADMIN = process.env.ADMIN_TG_CHAT_ID;
-  if (BOT_TOKEN && ADMIN) {
+  if (isFuture && BOT_TOKEN && ADMIN) {
     const f = rec.fields || {};
     const esc = (s: string) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const text = [

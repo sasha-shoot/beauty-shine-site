@@ -22,7 +22,16 @@ type Visit = {
   master: string;
   date: string;
   price: number;
+  duration: number;
 };
+
+/** Відгук доступний після завершення процедури (початок + тривалість, мін. 60 хв). */
+function visitFinished(v: Visit): boolean {
+  const start = new Date(v.date).getTime();
+  if (isNaN(start)) return true; // дату не розпарсили — не блокуємо
+  const durMs = (v.duration > 0 ? v.duration : 60) * 60_000;
+  return Date.now() >= start + durMs;
+}
 
 const UA_MONTHS = ["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
 
@@ -176,7 +185,7 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
   }, [user, profileOpen]);
 
   const cancelVisit = async (recId: string) => {
-    if (!confirm("Скасувати цей запис? Майстер отримає повідомлення.")) return;
+    if (!confirm("Видалити цей запис з вашого архіву на сайті?")) return;
     try {
       const res = await fetch(`/api/me/visits?id=${encodeURIComponent(recId)}`, { method: "DELETE" });
       const data = await res.json();
@@ -302,15 +311,21 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
                     <span className="pf-visit-price num">{v.price > 0 ? `${v.price} грн` : "—"}</span>
                   </div>
                   <div className="pf-visit-actions">
-                    <a
-                      className="pf-visit-btn review"
-                      href={`/reviews?tag=${encodeURIComponent("Майстер " + v.master)}`}
-                      onClick={closeProfile}
-                    >✍️ Залишити відгук</a>
+                    {visitFinished(v) ? (
+                      <a
+                        className="pf-visit-btn review"
+                        href={`/reviews?tag=${encodeURIComponent("Майстер " + v.master)}`}
+                        onClick={closeProfile}
+                      >✍️ Залишити відгук</a>
+                    ) : (
+                      <span className="pf-visit-btn review disabled" title="Відгук можна залишити після візиту">
+                        ✍️ Відгук — після візиту
+                      </span>
+                    )}
                     <button
                       className="pf-visit-btn cancel"
                       onClick={() => cancelVisit(v.rec_id)}
-                    >Скасувати запис</button>
+                    >Видалити з архіву</button>
                   </div>
                 </div>
               ))}
