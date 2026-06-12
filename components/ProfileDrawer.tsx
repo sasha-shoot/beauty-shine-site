@@ -283,7 +283,7 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
                     <b>{v.service}</b>
                     <span>{fmtDate(v.date)} · майстер {v.master}</span>
                   </div>
-                  <span className="pf-visit-price num">{v.price} грн</span>
+                  <span className="pf-visit-price num">{v.price > 0 ? `${v.price} грн` : "—"}</span>
                 </div>
               ))}
             </>
