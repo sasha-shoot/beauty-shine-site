@@ -33,9 +33,9 @@ export function Footer() {
           </div>
           <div className="col">
             <h5>Клієнтам</h5>
-            <Link href="/#features">Доставка і оплата</Link>
-            <Link href="/#features">Повернення</Link>
-            <Link href="/#results">Питання та відповіді</Link>
+            <Link href="/delivery">Доставка і оплата</Link>
+            <Link href="/returns">Повернення</Link>
+            <Link href="/faq">Питання та відповіді</Link>
             <Link href="/#results">Система лояльності</Link>
           </div>
           <div className="col">
