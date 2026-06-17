@@ -14,6 +14,7 @@ type Order = {
   date: string;
   items: string;
   total: number;
+  processed: boolean;
 };
 
 type Visit = {
@@ -268,8 +269,11 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
                 <div key={o.rec_id} className="pf-order">
                   <div className="pf-order-top">
                     <span className="pf-order-no">№ {o.order_no}</span>
-                    <span className="pf-order-date" style={{ color: "var(--ink-3)", fontSize: 13 }}>{fmtDate(o.date)}</span>
+                    <span className={`pf-order-status ${o.processed ? "done" : "pending"}`}>
+                      {o.processed ? "✓ Оброблено" : "⏳ Оформлення"}
+                    </span>
                   </div>
+                  <div className="pf-order-date-row">{fmtDate(o.date)}</div>
                   <div className="pf-order-items">{o.items}</div>
                   <div className="pf-order-foot">
                     <span style={{ color: "var(--ink-3)", fontSize: 13 }}>Сума</span>

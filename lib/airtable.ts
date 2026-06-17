@@ -176,6 +176,7 @@ export type OrderRow = {
   address: string;   // місто + відділення НП (для постачальника)
   comment: string;
   date: string;      // ISO
+  processed: boolean; // галочка «Оброблено» в Airtable → статус для клієнта
 };
 
 export type VisitRow = {
@@ -226,6 +227,7 @@ export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
       address: f.address || "",
       comment: f.comment || "",
       date: f.date || rec.createdTime || "",
+      processed: Boolean(f["Оброблено"]),
     };
   });
 

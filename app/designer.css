@@ -1509,3 +1509,13 @@ img { content-visibility: auto; }
   .info-cta-inner .btn { width: 100%; justify-content: center; }
   .info-card { padding: 18px; }
 }
+
+/* ═══ Статус замовлення (плашка в кабінеті) ═══ */
+.pf-order-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pf-order-status {
+  font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: var(--r-full);
+  white-space: nowrap; letter-spacing: .01em;
+}
+.pf-order-status.pending { background: #fff4e0; color: #c77700; }
+.pf-order-status.done    { background: #e3f7ec; color: #1a8a4f; }
+.pf-order-date-row { color: var(--ink-3); font-size: 13px; margin-top: 4px; }
