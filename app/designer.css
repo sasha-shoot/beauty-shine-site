@@ -692,8 +692,9 @@
   .hero{padding:36px 0 20px;}
   .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center;}
   @media(min-width:920px){
-    .hero{max-width:1300px;min-height:624px;margin-left:auto;margin-right:auto;}
-    .hero-grid{grid-template-columns:1.04fr .96fr;gap:52px;padding:24px 0 40px;max-width:1200px;min-height:624px;margin-left:auto;margin-right:auto;}
+    /* hero виходить за межі .container (1240px), щоб досягти 1300px */
+    .hero{width:100vw;max-width:1300px;min-height:624px;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;}
+    .hero-grid{grid-template-columns:1.04fr .96fr;gap:52px;padding:24px 40px 40px;width:100%;max-width:1200px;min-height:624px;margin-left:auto;margin-right:auto;}
     .hero-cutout{left:48px;right:auto;width:500px;}
   }
   .hero-copy{min-width:0;}
