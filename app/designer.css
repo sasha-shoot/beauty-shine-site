@@ -691,7 +691,11 @@
   /* HERO */
   .hero{padding:36px 0 20px;}
   .hero-grid{display:grid;grid-template-columns:1fr;gap:36px;align-items:center;}
-  @media(min-width:920px){.hero-grid{grid-template-columns:1.04fr .96fr;gap:52px;padding:24px 0 40px;}}
+  @media(min-width:920px){
+    .hero{max-width:1300px;min-height:624px;margin-left:auto;margin-right:auto;}
+    .hero-grid{grid-template-columns:1.04fr .96fr;gap:52px;padding:24px 0 40px;max-width:1200px;min-height:624px;margin-left:auto;margin-right:auto;}
+    .hero-cutout{left:48px;right:auto;width:500px;}
+  }
   .hero-copy{min-width:0;}
   .hero-visual{min-width:0;}
   .pill-badge{display:inline-flex;align-items:center;white-space:nowrap;gap:8px;padding:9px 18px;border-radius:var(--r-full);background:#fff;color:var(--purple-deep);font-size:13px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;box-shadow:var(--shadow-sm);}
@@ -935,7 +939,7 @@
   .nl-cta .arr{width:18px;height:18px;color:var(--purple-deep);transition:transform .25s var(--ease-out);}
   .nl-cta:hover .arr{transform:translateX(3px);}
   .nl-deco{position:relative;min-height:300px;}
-  .nl-phone{position:absolute;left:110px;top:50px;bottom:50px;width:500px;height:580px;overflow:hidden;z-index:3;pointer-events:none;}
+  .nl-phone{position:absolute;right:4%;top:-54px;bottom:0;width:min(44%,380px);overflow:hidden;z-index:3;pointer-events:none;}
   .nl-screen{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;height:auto;display:block;border-radius:40px;filter:drop-shadow(0 18px 26px rgba(22,33,62,.4));}
   .nl-spark{position:absolute;color:var(--yellow);z-index:4;}
   .nl-spark.s1{width:34px;top:2%;right:8%;animation:twinkle 3s ease-in-out infinite;}

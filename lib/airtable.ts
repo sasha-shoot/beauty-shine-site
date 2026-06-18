@@ -29,6 +29,7 @@ export type Product = {
   usage: string;
   inci: string;
   image: string;
+  gallery: string[];
   source: string;
   status: string;
   in_stock: boolean;
@@ -68,9 +69,9 @@ function isValidSlug(s: string): boolean {
 }
 
 function isValidImageUrl(s: string): boolean {
-  // Image використовуємо як <img src=...> — приймаємо тільки повні http/https URL.
-  // Інакше браузер інтерпретує як відносний шлях і робить 404.
-  return /^https?:\/\//i.test(s);
+  // Приймаємо повні http/https URL АБО локальні шляхи з public/ (напр. /divafarm/file.jpg).
+  // Локальний шлях має починатися з "/" — Next.js віддасть його з public/.
+  return /^https?:\/\//i.test(s) || /^\/[^/]/.test(s);
 }
 
 function recordToProduct(rec: any): Product {
@@ -80,12 +81,23 @@ function recordToProduct(rec: any): Product {
   const rawSlug = typeof f.id === "string" ? f.id.trim() : "";
   const slug = isValidSlug(rawSlug) ? rawSlug : rec.id;
 
-  // Image — або валідний http(s) URL, або attachment-поле, або пусто
+  // Image — або валідний http(s)/локальний URL, або attachment-поле, або пусто
   let imageUrl = "";
   if (typeof f.image === "string" && isValidImageUrl(f.image)) {
     imageUrl = f.image;
   } else if (Array.isArray(f.image) && f.image.length > 0) {
     imageUrl = f.image[0].url || f.image[0].thumbnails?.large?.url || "";
+  }
+
+  // Gallery — додаткові фото (рядки через перенос/кому), тільки валідні шляхи
+  let gallery: string[] = [];
+  if (typeof f.gallery === "string" && f.gallery.trim()) {
+    gallery = f.gallery
+      .split(/[\n,]/)
+      .map((x: string) => x.trim())
+      .filter((x: string) => x && isValidImageUrl(x));
+  } else if (Array.isArray(f.gallery)) {
+    gallery = f.gallery.map((a: any) => a.url).filter(Boolean);
   }
 
   return {
@@ -105,6 +117,7 @@ function recordToProduct(rec: any): Product {
     usage: f.usage || "",
     inci: f.inci || "",
     image: imageUrl,
+    gallery,
     source: f.source || "",
     status: f.status || "",
     in_stock: f.in_stock === true,
