@@ -793,6 +793,11 @@
   .pop-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:14px;}
   .pop-grid .card-name{font-size:15px;}
   .pop-grid .card-body{padding:12px 14px 14px;}
+  /* Менші кнопки дій у Популярних (компактніші картки) */
+  .pop-grid .heart{width:32px;height:32px;}
+  .pop-grid .heart svg{width:16px;height:16px;}
+  .pop-grid .add-btn{width:34px;height:34px;}
+  .pop-grid .add-btn svg{width:15px;height:15px;}
 
   /* STUDIO BANNER */
   .studio-banner{display:grid;grid-template-columns:1fr;gap:0;border-radius:var(--r-xl);overflow:hidden;background:linear-gradient(135deg,#1B1238 0%,#2A1B52 45%,#5B3A95 100%);box-shadow:var(--shadow-lg);}
