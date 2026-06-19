@@ -471,6 +471,13 @@
   .prod-img .deco-star{position:absolute;color:var(--yellow);}
   .prod-img .pds-1{top:10%;right:10%;width:30px;}
   .prod-img .pds-2{bottom:14%;left:8%;width:22px;}
+  /* Галерея мініатюр під фото товару */
+  .prod-media{display:flex;flex-direction:column;gap:14px;}
+  .prod-thumbs{display:flex;gap:10px;flex-wrap:wrap;}
+  .prod-thumb{flex:0 0 auto;width:72px;height:72px;padding:0;border:2px solid transparent;border-radius:14px;overflow:hidden;background:var(--lavender);cursor:pointer;transition:border-color .2s var(--ease-out),transform .2s var(--ease-out);}
+  .prod-thumb:hover{transform:translateY(-2px);}
+  .prod-thumb.active{border-color:var(--purple);}
+  .prod-thumb img{width:100%;height:100%;object-fit:contain;display:block;}
 
   .prod-cat{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-deep);font-weight:700;}
   .prod h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);line-height:1.1;font-weight:600;margin-top:8px;letter-spacing:-.015em;}

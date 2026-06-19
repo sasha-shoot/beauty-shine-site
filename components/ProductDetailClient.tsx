@@ -17,6 +17,17 @@ export function ProductDetailClient({ product }: { product: Product }) {
   const [fav, setFav] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
+  // Галерея: головне фото + додаткові з product.gallery (без дублів)
+  const images = [product.image, ...product.gallery].filter(
+    (v, i, a) => Boolean(v) && a.indexOf(v) === i
+  );
+  const [activeImg, setActiveImg] = useState(images[0] ?? "");
+  useEffect(() => {
+    // скидаємо активне фото при переході на інший товар
+    setActiveImg(images[0] ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.slug]);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(FAV_KEY);
@@ -64,12 +75,29 @@ export function ProductDetailClient({ product }: { product: Product }) {
 
   return (
     <div className="prod-grid">
-      <div className="prod-img">
-        <svg className="deco-star pds-1" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
-        <svg className="deco-star pds-2" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
-        <div className="bottle">
-          <ImageSlot shape="rounded" radius={28} placeholder={product.name} src={product.image} alt={product.name} />
+      <div className="prod-media">
+        <div className="prod-img">
+          <svg className="deco-star pds-1" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+          <svg className="deco-star pds-2" viewBox="0 0 100 100"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="currentColor"/></svg>
+          <div className="bottle">
+            <ImageSlot shape="rounded" radius={28} placeholder={product.name} src={activeImg} alt={product.name} />
+          </div>
         </div>
+        {images.length > 1 && (
+          <div className="prod-thumbs">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                className={`prod-thumb ${activeImg === img ? "active" : ""}`}
+                onClick={() => setActiveImg(img)}
+                aria-label={`Показати фото ${i + 1}`}
+              >
+                <img src={img} alt={`${product.name} — фото ${i + 1}`} loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div>
         <div className="prod-cat">{product.category}</div>
