@@ -3,6 +3,7 @@ import { getFeaturedProducts, getAllProducts } from "@/lib/airtable";
 import { ProductCard } from "@/components/ProductCard";
 import { ImageSlot } from "@/components/ImageSlot";
 import { MasterCard } from "@/components/MasterCard";
+import { PartnerCard } from "@/components/PartnerCard";
 import { BeforeAfterCompare } from "@/components/BeforeAfterCompare";
 
 export const revalidate = 60;
@@ -208,6 +209,26 @@ export default async function HomePage() {
                 "Диплом майстра нігтьового сервісу вищої категорії",
                 "Грамота фестивалю nail-індустрії «Краса в деталях», 2023",
                 "Подяка постійних клієнток студії Beauty & Shine",
+              ]}
+            />
+          </div>
+        </section>
+
+        {/* ═══════════════ PARTNERS ═══════════════ */}
+        <section className="section" id="partners">
+          <div className="head-row reveal">
+            <div><div className="eyebrow">Наші партнери</div><h2 className="block-title">Бренди, яким ми довіряємо</h2></div>
+          </div>
+          <div className="partners-grid reveal">
+            <PartnerCard
+              name="DivaPharm"
+              logoSrc="/divafarm/divapharm-logo.png"
+              description="Професійна космецевтика для догляду за шкірою ніг та нігтями"
+              certificates={[
+                { name: "Сертифікат якості продукції" },
+                { name: "Декларація про відповідність" },
+                { name: "Висновок санітарно-епідеміологічної експертизи" },
+                { name: "Сертифікат офіційного дистриб'ютора" },
               ]}
             />
           </div>

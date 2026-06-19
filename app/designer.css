@@ -882,6 +882,41 @@
   .master-detail::-webkit-scrollbar{width:6px;}
   .master-detail::-webkit-scrollbar-thumb{background:rgba(122,71,184,.25);border-radius:3px;}
 
+  /* ═══ Партнери (hover/клік розкриття сертифікатів) ═══ */
+  .partners-grid{display:grid;grid-template-columns:1fr;gap:18px;align-items:start;}
+  @media(min-width:640px){.partners-grid{grid-template-columns:1fr 1fr;}}
+  .partner-block{background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;transition:box-shadow .35s var(--ease-out);}
+  .partner-block.open{box-shadow:var(--shadow-md);}
+  @media(hover:hover){.partner-block:hover{box-shadow:var(--shadow-md);}}
+  .partner-card{position:relative;padding:22px;display:flex;gap:16px;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .partner-card:focus-visible{outline:2px solid var(--purple);outline-offset:-2px;border-radius:var(--r-lg);}
+  .partner-logo{flex-shrink:0;width:72px;height:72px;border-radius:18px;background:var(--lavender);display:grid;place-items:center;box-shadow:0 10px 24px -14px rgba(122,71,184,.45);}
+  .partner-logo img{width:50px;height:50px;object-fit:contain;display:block;}
+  .partner-tx{flex:1;min-width:0;}
+  .partner-tx h4{font-family:'Playfair Display',serif;font-size:21px;font-weight:600;}
+  .partner-desc{font-size:13.5px;color:var(--ink-2);margin-top:3px;line-height:1.35;}
+  .partner-tag{display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:4px 12px 4px 9px;border-radius:var(--r-full);background:var(--lavender);color:var(--purple-deep);font-size:12.5px;font-weight:700;}
+  .partner-tag svg{width:13px;height:13px;}
+  .partner-toggle{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--lavender);display:grid;place-items:center;color:var(--purple-deep);transition:background .25s,transform .35s var(--ease-out);align-self:flex-start;}
+  .partner-toggle .pt-chev{width:20px;height:20px;transition:transform .35s var(--ease-out);}
+  @media(hover:hover){.partner-block:hover .partner-toggle{background:var(--purple);color:#fff;}.partner-block:hover .pt-chev{transform:rotate(180deg);}}
+  .partner-block.open .partner-toggle{background:var(--purple);color:#fff;}
+  .partner-block.open .pt-chev{transform:rotate(180deg);}
+  .partner-detail{max-height:0;overflow:hidden;transition:max-height .44s var(--ease-out);}
+  @media(hover:hover){.partner-block:hover .partner-detail{max-height:460px;overflow-y:auto;}}
+  .partner-block.open .partner-detail{max-height:460px;overflow-y:auto;}
+  .partner-detail-inner{padding:0 22px;}
+  @media(hover:hover){.partner-block:hover .partner-detail-inner{padding:6px 22px 22px;border-top:1px solid var(--line);}}
+  .partner-block.open .partner-detail-inner{padding:6px 22px 22px;border-top:1px solid var(--line);}
+  .partner-detail-inner h5{margin-top:14px;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--purple-deep);font-weight:800;margin-bottom:10px;}
+  .partner-certs{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .partner-cert{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:var(--lavender);color:var(--ink-2);font-size:13.5px;font-weight:600;text-decoration:none;transition:background .2s,transform .2s var(--ease-out);}
+  a.partner-cert:hover{background:var(--lavender-2);transform:translateX(2px);}
+  .partner-cert .cert-ic{width:18px;height:18px;color:var(--purple-deep);flex-shrink:0;}
+  .partner-empty{font-size:13.5px;color:var(--ink-3);padding:4px 0;}
+  .partner-detail::-webkit-scrollbar{width:6px;}
+  .partner-detail::-webkit-scrollbar-thumb{background:rgba(122,71,184,.25);border-radius:3px;}
+
   /* CERTIFICATES */
   .cert-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
   .cert-nav{display:flex;gap:8px;}
