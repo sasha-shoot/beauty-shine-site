@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useUI } from "@/lib/ui-context";
 import { useUser } from "@/lib/user-context";
@@ -12,6 +12,20 @@ export function Header() {
   const { user, isHydrated: userHydrated } = useUser();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bump, setBump] = useState(false);
+  const prevCount = useRef<number | null>(null);
+
+  // Підстрибування лічильника при додаванні товару (видимий фідбек на «+»)
+  useEffect(() => {
+    if (!cartHydrated) return;
+    if (prevCount.current !== null && totalCount > prevCount.current) {
+      setBump(true);
+      const t = setTimeout(() => setBump(false), 500);
+      prevCount.current = totalCount;
+      return () => clearTimeout(t);
+    }
+    prevCount.current = totalCount;
+  }, [totalCount, cartHydrated]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -75,7 +89,7 @@ export function Header() {
                 <svg viewBox="0 0 24 24"><path d="M5 7h14l-1.5 9.5a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7L5 7z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
               </span>
               <span className="cp-label">Кошик</span>
-              <span className="cart-count">{cartHydrated ? totalCount : 0}</span>
+              <span className={`cart-count ${cartHydrated && totalCount > 0 ? "show" : ""} ${bump ? "bump" : ""}`}>{cartHydrated ? totalCount : 0}</span>
             </button>
           </div>
         </div>

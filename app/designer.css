@@ -104,7 +104,7 @@
   .icon-btn svg{width:22px;height:22px;stroke:var(--ink);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
   /* Cart pill */
-  .cart-pill{width:124px;
+  .cart-pill{width:auto;
     display:inline-flex;align-items:center;gap:9px;padding:9px 9px 9px 18px;
     background:#fff;border-radius:var(--r-full);font-weight:600;font-size:14.5px;color:var(--ink);
     box-shadow:0 8px 22px -12px rgba(22,33,62,.32);transition:transform .15s var(--ease),box-shadow .25s;
@@ -337,6 +337,9 @@
   .card:hover .card-img .bottle{transform:translate(-50%,-50%) scale(1.06);}
   /* 300px — десктопне значення (твоє). На вужчих екранах (2-колонкова сітка, картки ~180-260px) фіксовані 300px зрізали б флакон, тому впишемо в картку. */
   @media(max-width:1099px){.card-img .bottle{height:100%;}}
+  /* Головна «Популярні товари»: картки дрібніші за каталог, тому фіксовані 300px ріжуть флакон. Вписуємо в картку + пропорційний відступ. */
+  .pop-grid .card-img .bottle{height:100%;}
+  .pop-grid .card-img .bottle img{padding-bottom:14%;}
   .card-img .corner-star{position:absolute;top:16px;left:16px;width:18px;color:var(--purple-2);opacity:.9;}
   .badge-brand{
     position:absolute;bottom:14px;left:14px;
