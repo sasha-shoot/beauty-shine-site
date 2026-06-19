@@ -330,11 +330,13 @@
     border:1px solid rgba(255,255,255,.6);
   }
   .card:hover{transform:translateY(-8px) scale(1.012);box-shadow:var(--shadow-bubble);}
-  .card-img{position:relative;aspect-ratio:1/1;background:radial-gradient(120% 110% at 30% 18%, #FCFAFF 0%, var(--lavender) 70%, var(--lavender-2) 130%);overflow:hidden;margin:10px 10px 0;border-radius:calc(var(--r-lg) - 12px);}
-  .card-img .bottle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:100%;transition:transform .5s var(--ease-out);}
+  .card-img{position:relative;aspect-ratio:1/1;background:#fff;overflow:hidden;margin:10px 10px 0;border-radius:calc(var(--r-lg) - 12px);}
+  .card-img .bottle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:300px;transition:transform .5s var(--ease-out);}
   .card-img .bottle .img-slot-rounded{width:100%;height:100%;}
-  .card-img .bottle img{width:100%;height:100%;object-fit:contain;}
+  .card-img .bottle img{width:100%;height:100%;object-fit:cover;padding-bottom:40px;}
   .card:hover .card-img .bottle{transform:translate(-50%,-50%) scale(1.06);}
+  /* 300px — десктопне значення (твоє). На вужчих екранах (2-колонкова сітка, картки ~180-260px) фіксовані 300px зрізали б флакон, тому впишемо в картку. */
+  @media(max-width:1099px){.card-img .bottle{height:100%;}}
   .card-img .corner-star{position:absolute;top:16px;left:16px;width:18px;color:var(--purple-2);opacity:.9;}
   .badge-brand{
     position:absolute;bottom:14px;left:14px;
