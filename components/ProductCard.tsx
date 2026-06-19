@@ -67,6 +67,7 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   const href = `/product/${product.slug}`;
+  const isDiva = /diva/i.test(product.brand);
 
   return (
     <article className="card">
@@ -94,6 +95,13 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="card-cat">{product.category}</div>
           <div className="card-name">{product.name}</div>
         </Link>
+        {isDiva && (
+          <span className="card-partner">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/divafarm/divapharm-logo.png" alt="" />
+            Офіційний партнер
+          </span>
+        )}
         {product.price_uah ? (
           <div className="card-bonus" title="Бонуси за програмою лояльності">
             <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z"/></svg>

@@ -485,6 +485,17 @@
   .prod-cat{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-deep);font-weight:700;}
   .prod h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);line-height:1.1;font-weight:600;margin-top:8px;letter-spacing:-.015em;}
   .prod-brand{margin-top:10px;display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:var(--r-full);background:var(--ink);color:#fff;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+  /* ═══ Бейдж «Офіційний партнер DivaPharm» ═══ */
+  /* Повний — на сторінці товару */
+  .partner-badge{display:inline-flex;align-items:center;gap:10px;margin-top:14px;padding:7px 14px 7px 7px;border-radius:var(--r-full);background:#fff;border:1.5px solid var(--lavender-2);box-shadow:var(--shadow-sm);}
+  .partner-badge .pb-logo{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--lavender);flex-shrink:0;}
+  .partner-badge .pb-logo img{width:26px;height:26px;object-fit:contain;display:block;}
+  .partner-badge .pb-text{font-size:13.5px;color:var(--ink-2);font-weight:600;}
+  .partner-badge .pb-text b{color:var(--purple-deep);font-weight:800;}
+  .partner-badge .pb-check{width:20px;height:20px;color:#fff;background:var(--purple);border-radius:50%;padding:3px;flex-shrink:0;}
+  /* Компактний — на картці товару */
+  .card-partner{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;margin-top:2px;padding:3px 9px 3px 4px;border-radius:var(--r-full);background:var(--lavender);color:var(--purple-deep);font-size:10.5px;font-weight:700;letter-spacing:.01em;}
+  .card-partner img{width:15px;height:15px;border-radius:50%;background:#fff;padding:2px;object-fit:contain;flex-shrink:0;}
   .prod-price{margin-top:20px;font-family:'Manrope',sans-serif;font-size:40px;font-weight:800;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
   .prod-price small{font-size:18px;font-weight:600;color:var(--ink-3);margin-left:5px;}
   .prod-bonus{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 14px;border-radius:var(--r-full);background:rgba(245,222,70,.22);color:#8a6d00;font-size:13.5px;font-weight:700;}

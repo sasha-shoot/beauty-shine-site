@@ -22,6 +22,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
     (v, i, a) => Boolean(v) && a.indexOf(v) === i
   );
   const [activeImg, setActiveImg] = useState(images[0] ?? "");
+  const isDiva = /diva/i.test(product.brand);
   useEffect(() => {
     // скидаємо активне фото при переході на інший товар
     setActiveImg(images[0] ?? "");
@@ -103,6 +104,16 @@ export function ProductDetailClient({ product }: { product: Product }) {
         <div className="prod-cat">{product.category}</div>
         <h1>{product.name}</h1>
         <div className="prod-brand">{product.brand}</div>
+        {isDiva && (
+          <div className="partner-badge">
+            <span className="pb-logo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/divafarm/divapharm-logo.png" alt="DivaPharm" />
+            </span>
+            <span className="pb-text">Офіційний партнер <b>DivaPharm</b></span>
+            <svg className="pb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        )}
         {product.price_uah ? (
           <>
             <div className="prod-price num">{product.price_uah}<small>грн</small></div>
