@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useUser } from "@/lib/user-context";
 import { useRouter } from "next/navigation";
+import { DeliveryPicker, type DeliveryValue } from "@/components/DeliveryPicker";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clear, isHydrated } = useCart();
@@ -12,51 +13,51 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
-  // Префіл з даних користувача, якщо є
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    city: "",
-    branch: "",
-    comment: "",
-  });
+  const [contact, setContact] = useState({ name: "", phone: "", comment: "" });
+  const [delivery, setDelivery] = useState<DeliveryValue>({ method: "np_branch", city: "", point: "" });
+
   useEffect(() => {
     if (user) {
-      setForm((f) => ({
-        ...f,
-        name: f.name || user.name || "",
-        phone: f.phone || user.phone || "",
-        city: f.city || user.city || "",
+      setContact((c) => ({
+        ...c,
+        name: c.name || user.name || "",
+        phone: c.phone || user.phone || "",
       }));
     }
   }, [user]);
 
-  function update(k: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-      setForm((f) => ({ ...f, [k]: e.target.value }));
+  const onDelivery = useCallback((v: DeliveryValue) => setDelivery(v), []);
+
+  function updateContact(k: keyof typeof contact) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setContact((c) => ({ ...c, [k]: e.target.value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit(e?: React.FormEvent) {
+    if (e) e.preventDefault();
     if (submitting) return;
 
-    if (!form.name.trim()) { alert("Введіть ім'я"); return; }
-    if (form.phone.replace(/\D/g, "").length < 10) { alert("Введіть коректний номер телефону"); return; }
-    if (!form.city.trim()) { alert("Вкажіть місто"); return; }
-    if (!form.branch.trim()) { alert("Оберіть відділення"); return; }
+    if (!contact.name.trim()) { alert("Введіть ім'я"); return; }
+    if (contact.phone.replace(/\D/g, "").length < 10) { alert("Введіть коректний номер телефону"); return; }
+
+    const isPickup = delivery.method === "pickup";
+    if (!isPickup) {
+      if (!delivery.city.trim()) { alert("Вкажіть місто доставки"); return; }
+      if (!delivery.point.trim()) { alert("Оберіть відділення або поштомат"); return; }
+    }
 
     setSubmitting(true);
-
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: form.name,
-          customer_phone: form.phone,
-          city: form.city,
-          branch: form.branch,
-          comment: form.comment,
+          customer_name: contact.name,
+          customer_phone: contact.phone,
+          delivery_method: delivery.method,
+          city: delivery.city,
+          point: delivery.point,
+          comment: contact.comment,
           items: items.map((i) => ({ name: i.name, qty: i.quantity, price: i.price_uah, variant: i.variant })),
           total: totalPrice,
         }),
@@ -113,8 +114,8 @@ export default function CheckoutPage() {
                   placeholder="Як до Вас звертатись"
                   autoComplete="name"
                   required
-                  value={form.name}
-                  onChange={update("name")}
+                  value={contact.name}
+                  onChange={updateContact("name")}
                 />
               </div>
               <div className="field">
@@ -124,51 +125,14 @@ export default function CheckoutPage() {
                   placeholder="+380 __ ___ __ __"
                   autoComplete="tel"
                   required
-                  value={form.phone}
-                  onChange={update("phone")}
+                  value={contact.phone}
+                  onChange={updateContact("phone")}
                 />
               </div>
             </div>
           </div>
 
-          <div className="form-card">
-            <h3><span className="num-circle">2</span> Адреса доставки</h3>
-            <div className="row2">
-              <div className="field">
-                <label>Місто</label>
-                <input
-                  type="text"
-                  placeholder="Київ, Львів, Одеса…"
-                  list="citiesList"
-                  value={form.city}
-                  onChange={update("city")}
-                />
-                <datalist id="citiesList">
-                  <option value="Київ" />
-                  <option value="Львів" />
-                  <option value="Одеса" />
-                  <option value="Харків" />
-                  <option value="Дніпро" />
-                  <option value="Вінниця" />
-                  <option value="Полтава" />
-                  <option value="Чернівці" />
-                  <option value="Ізмаїл" />
-                </datalist>
-              </div>
-              <div className="field">
-                <label>Відділення Нової Пошти</label>
-                <input
-                  type="text"
-                  placeholder="Наприклад: № 12 (вул. Шевченка, 5)"
-                  value={form.branch}
-                  onChange={update("branch")}
-                />
-              </div>
-            </div>
-            <p style={{ marginTop: 12, fontSize: 13, color: "var(--ink-3)", lineHeight: 1.5 }}>
-              Відправляє посилку наш постачальник прямо до вас. Оплата за доставку — за тарифом Нової Пошти при отриманні.
-            </p>
-          </div>
+          <DeliveryPicker onChange={onDelivery} />
 
           <div className="form-card">
             <h3><span className="num-circle">3</span> Коментар</h3>
@@ -177,8 +141,8 @@ export default function CheckoutPage() {
               <textarea
                 rows={3}
                 placeholder="Зателефонувати перед відправкою, упакувати в подарунок…"
-                value={form.comment}
-                onChange={update("comment")}
+                value={contact.comment}
+                onChange={updateContact("comment")}
               />
             </div>
           </div>
@@ -201,7 +165,7 @@ export default function CheckoutPage() {
           <button
             type="button"
             className="btn btn-purple btn-lg btn-full"
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
             disabled={submitting}
           >
             <span>{submitting ? "Відправляємо…" : "Підтвердити замовлення"}</span>

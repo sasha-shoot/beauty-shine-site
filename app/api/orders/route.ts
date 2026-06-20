@@ -10,21 +10,32 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_TG_CHAT_ID = process.env.ADMIN_TG_CHAT_ID;
 
 type Item = { name: string; qty: number; price: number; variant?: string };
+type DeliveryMethod = "np_branch" | "np_postomat" | "ukr_office" | "pickup";
 type Body = {
   customer_name: string;
   customer_phone: string;
+  delivery_method: DeliveryMethod;
   city: string;
-  branch: string;
+  point: string;
   comment?: string;
   items: Item[];
   total: number;
 };
 
+const METHOD_LABELS: Record<DeliveryMethod, string> = {
+  np_branch: "Нова Пошта — відділення",
+  np_postomat: "Нова Пошта — поштомат",
+  ukr_office: "Укрпошта — відділення",
+  pickup: "Самовивіз зі студії",
+};
+const VALID_METHODS: DeliveryMethod[] = ["np_branch", "np_postomat", "ukr_office", "pickup"];
+const STUDIO_ADDR = "ТЦ «Дельта», 2 поверх, Ізмаїл, Одеська обл.";
+
 /* ── Ліміти валідації ─────────────────────────────────────── */
 const MAX_NAME = 100;
 const MAX_PHONE = 20;
 const MAX_CITY = 80;
-const MAX_BRANCH = 120;
+const MAX_POINT = 200;
 const MAX_COMMENT = 500;
 const MAX_ITEMS = 50;
 const MAX_ITEM_NAME = 200;
@@ -80,7 +91,7 @@ async function writeToAirtable(record: any): Promise<string | null> {
           Authorization: `Bearer ${TOKEN}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fields: record }),
+        body: JSON.stringify({ fields: record, typecast: true }),
       }
     );
     if (!res.ok) {
@@ -144,8 +155,11 @@ export async function POST(req: NextRequest) {
   /* 2. Санітизація текстових полів */
   const customerName = cleanStr(body.customer_name, MAX_NAME);
   const customerPhone = cleanStr(body.customer_phone, MAX_PHONE);
+  const methodRaw = typeof body.delivery_method === "string" ? body.delivery_method : "";
+  const method = (VALID_METHODS.includes(methodRaw as DeliveryMethod) ? methodRaw : "np_branch") as DeliveryMethod;
+  const isPickup = method === "pickup";
   const city = cleanStr(body.city, MAX_CITY);
-  const branch = cleanStr(body.branch, MAX_BRANCH);
+  const point = cleanStr(body.point, MAX_POINT);
   const comment = cleanStr(body.comment, MAX_COMMENT, true);
 
   /* 3. Валідація обов'язкових полів */
@@ -156,11 +170,11 @@ export async function POST(req: NextRequest) {
   if (phoneDigits.length < 10 || phoneDigits.length > 15) {
     return NextResponse.json({ ok: false, error: "Невалідний номер телефону" }, { status: 400 });
   }
-  if (!city) {
+  if (!isPickup && !city) {
     return NextResponse.json({ ok: false, error: "Вкажіть місто" }, { status: 400 });
   }
-  if (!branch) {
-    return NextResponse.json({ ok: false, error: "Вкажіть відділення" }, { status: 400 });
+  if (!isPickup && !point) {
+    return NextResponse.json({ ok: false, error: "Вкажіть відділення або поштомат" }, { status: 400 });
   }
 
   /* 4. Валідація items: типи, межі, санітизація назв */
@@ -206,7 +220,8 @@ export async function POST(req: NextRequest) {
   /* 7. Запис в Airtable */
   const orderNo = genOrderNo();
   const dateIso = new Date().toISOString();
-  const address = `${city}, ${branch}`;
+  const methodLabel = METHOD_LABELS[method];
+  const address = isPickup ? STUDIO_ADDR : `${city}, ${point}`;
 
   const recordId = await writeToAirtable({
     order_no: orderNo,
@@ -215,6 +230,7 @@ export async function POST(req: NextRequest) {
     customer_phone: customerPhone,
     items: formatItemsForDB(items),
     total,
+    delivery_method: methodLabel,
     address,
     comment,
     date: dateIso,
@@ -237,6 +253,7 @@ export async function POST(req: NextRequest) {
     ``,
     `💰 <b>Сума: ${total} грн</b>`,
     ``,
+    `🚚 ${escHtml(methodLabel)}`,
     `📦 Куди: ${escHtml(address)}`,
     comment ? `💬 Коментар: ${escHtml(comment)}` : ``,
   ].filter(Boolean).join("\n");

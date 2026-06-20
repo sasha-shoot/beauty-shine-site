@@ -1601,3 +1601,48 @@ img { content-visibility: auto; }
 .pf-order-status.pending { background: #fff4e0; color: #c77700; }
 .pf-order-status.done    { background: #e3f7ec; color: #1a8a4f; }
 .pf-order-date-row { color: var(--ink-3); font-size: 13px; margin-top: 4px; }
+
+/* ══════════════════════════════════════════════════════════════
+   ДОСТАВКА — блок на сторінці товару + вибір способу на оформленні
+   ══════════════════════════════════════════════════════════════ */
+
+/* Витринний блок на сторінці товару */
+.prod-delivery{margin-top:18px;padding:18px 20px;border-radius:var(--r-lg);background:var(--lavender);border:1px solid var(--lavender-2);}
+.prod-delivery .pd-head{display:flex;align-items:center;gap:9px;font-weight:700;color:var(--ink);font-size:15px;}
+.prod-delivery .pd-head svg{width:20px;height:20px;color:var(--purple-deep);flex:none;}
+.prod-delivery .pd-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;}
+.prod-delivery .pd-list li{position:relative;padding-left:18px;font-size:13.5px;color:var(--ink-2);line-height:1.45;}
+.prod-delivery .pd-list li::before{content:"";position:absolute;left:3px;top:7px;width:6px;height:6px;border-radius:50%;background:var(--purple);}
+.prod-delivery .pd-list li b{color:var(--ink);font-weight:700;}
+.prod-delivery .pd-note{margin-top:11px;font-size:12.5px;color:var(--ink-3);line-height:1.5;}
+
+/* Вкладки способу доставки (checkout) */
+.dp-methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+@media(max-width:520px){.dp-methods{grid-template-columns:1fr;}}
+.dp-method{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s;-webkit-tap-highlight-color:transparent;}
+.dp-method .dp-method-label{font-size:14px;font-weight:700;color:var(--ink);}
+.dp-method .dp-method-hint{font-size:12px;color:var(--ink-3);font-weight:500;}
+.dp-method.active{border-color:var(--purple);background:var(--lavender);box-shadow:0 0 0 3px rgba(157,102,214,.14);}
+@media(hover:hover){.dp-method:hover{border-color:var(--purple);}}
+
+/* Автодоповнення міст/відділень */
+.dp-suggest{position:relative;}
+.dp-suggest .dp-loading{position:absolute;right:14px;top:38px;color:var(--ink-3);font-size:18px;line-height:1;pointer-events:none;}
+.dp-list{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);margin:0;padding:6px;list-style:none;background:#fff;border:1px solid var(--line-2);border-radius:14px;box-shadow:var(--shadow-md);max-height:260px;overflow-y:auto;}
+.dp-list li{margin:0;}
+.dp-list li button{display:block;width:100%;text-align:left;padding:9px 12px;border:none;background:transparent;border-radius:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer;line-height:1.4;}
+.dp-list li button:hover{background:var(--lavender);color:var(--ink);}
+.field input:disabled{background:#f6f6fa;color:var(--ink-3);cursor:not-allowed;}
+
+.dp-manual-note{margin:-4px 0 14px;font-size:12.5px;color:var(--purple-deep);background:var(--lavender);border-radius:12px;padding:9px 12px;line-height:1.5;}
+.dp-foot{margin-top:12px;font-size:13px;color:var(--ink-3);line-height:1.5;}
+
+/* Картка самовивозу */
+.dp-pickup{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:var(--r-lg);background:var(--lavender);border:1px solid var(--lavender-2);}
+.dp-pickup .dp-pickup-ic{font-size:24px;line-height:1;}
+.dp-pickup b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:4px;}
+.dp-pickup p{font-size:13px;color:var(--ink-2);line-height:1.5;margin:0;}
+
+/* Адреса доставки в картці замовлення (кабінет) */
+.pf-order-ship{display:flex;gap:7px;align-items:flex-start;margin-top:8px;font-size:12.5px;color:var(--ink-2);line-height:1.45;}
+.pf-order-ship .pf-ship-ic{flex:none;}

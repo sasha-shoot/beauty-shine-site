@@ -14,6 +14,8 @@ type Order = {
   date: string;
   items: string;
   total: number;
+  delivery_method?: string;
+  address?: string;
   processed: boolean;
 };
 
@@ -275,13 +277,19 @@ function CabinetView({ tab, setTab, onLogout }: { tab: Tab; setTab: (t: Tab) => 
                   </div>
                   <div className="pf-order-date-row">{fmtDate(o.date)}</div>
                   <div className="pf-order-items">{o.items}</div>
+                  {(o.delivery_method || o.address) && (
+                    <div className="pf-order-ship">
+                      <span className="pf-ship-ic">🚚</span>
+                      <span>{[o.delivery_method, o.address].filter(Boolean).join(" · ")}</span>
+                    </div>
+                  )}
                   <div className="pf-order-foot">
                     <span style={{ color: "var(--ink-3)", fontSize: 13 }}>Сума</span>
                     <span className="pf-order-total num">{o.total} грн</span>
                   </div>
                 </div>
               ))}
-              <p className="pf-note">Доставку здійснює наш постачальник прямо до вас Новою Поштою.</p>
+              <p className="pf-note">Доставку здійснює наш постачальник напряму до вас — Новою Поштою, Укрпоштою або самовивозом зі студії.</p>
             </>
           )
         )}

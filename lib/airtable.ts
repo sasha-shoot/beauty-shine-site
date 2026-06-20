@@ -200,7 +200,8 @@ export type OrderRow = {
   customer_phone: string;
   items: string;     // "Назва ×2, Друга назва ×1"
   total: number;
-  address: string;   // місто + відділення НП (для постачальника)
+  delivery_method: string; // спосіб доставки (НП відділення / поштомат / Укрпошта / самовивіз)
+  address: string;   // місто + точка видачі (для постачальника)
   comment: string;
   date: string;      // ISO
   processed: boolean; // галочка «Оброблено» в Airtable → статус для клієнта
@@ -251,6 +252,7 @@ export async function getOrdersByUser(userId: string): Promise<OrderRow[]> {
       customer_phone: f.customer_phone || "",
       items: f.items || "",
       total: Number(f.total) || 0,
+      delivery_method: f.delivery_method || "",
       address: f.address || "",
       comment: f.comment || "",
       date: f.date || rec.createdTime || "",

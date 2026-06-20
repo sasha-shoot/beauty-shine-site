@@ -176,6 +176,19 @@ export function ProductDetailClient({ product }: { product: Product }) {
           </button>
         </div>
 
+        <div className="prod-delivery">
+          <div className="pd-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>Доставка по всій Україні</span>
+          </div>
+          <ul className="pd-list">
+            <li><b>Нова Пошта</b> — у відділення або поштомат</li>
+            <li><b>Укрпошта</b> — у відділення</li>
+            <li><b>Самовивіз</b> — зі студії в Ізмаїлі (ТЦ «Дельта»)</li>
+          </ul>
+          <p className="pd-note">Спосіб доставки оберете під час оформлення. Оплата перевізнику при отриманні.</p>
+        </div>
+
         <div className="tabs">
           <div className="tab-headers" role="tablist">
             <button className={`tab-head ${tab === "desc" ? "active" : ""}`} onClick={() => setTab("desc")}>Опис</button>
