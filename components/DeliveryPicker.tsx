@@ -103,6 +103,15 @@ function Suggest({
   );
 }
 
+// Області для класифікатора Укрпошти (передаються як region_name)
+const UKR_REGIONS = [
+  "Вінницька", "Волинська", "Дніпропетровська", "Донецька", "Житомирська",
+  "Закарпатська", "Запорізька", "Івано-Франківська", "Київ", "Київська",
+  "Кіровоградська", "Луганська", "Львівська", "Миколаївська", "Одеська",
+  "Полтавська", "Рівненська", "Сумська", "Тернопільська", "Харківська",
+  "Херсонська", "Хмельницька", "Черкаська", "Чернівецька", "Чернігівська",
+];
+
 export function DeliveryPicker({ onChange }: { onChange: (v: DeliveryValue) => void }) {
   const [method, setMethod] = useState<DeliveryMethod>("np_branch");
 
@@ -110,6 +119,7 @@ export function DeliveryPicker({ onChange }: { onChange: (v: DeliveryValue) => v
   const [city, setCity] = useState("");
   const [cityRef, setCityRef] = useState(""); // NP CityRef або Ukrposhta CITY_ID
   const [point, setPoint] = useState("");
+  const [ukrRegion, setUkrRegion] = useState(""); // обрана область для Укрпошти
 
   // Чи налаштовані ключі провайдерів (дізнаємось із відповіді API)
   const [npManual, setNpManual] = useState(false);
@@ -129,12 +139,13 @@ export function DeliveryPicker({ onChange }: { onChange: (v: DeliveryValue) => v
 
   function switchMethod(m: DeliveryMethod) {
     setMethod(m);
-    setCity(""); setCityRef(""); setPoint("");
+    setCity(""); setCityRef(""); setPoint(""); setUkrRegion("");
   }
 
   async function fetchCities(q: string): Promise<SuggestItem[]> {
     const base = isUkr ? "/api/ukr/cities" : "/api/np/cities";
-    const res = await fetch(`${base}?q=${encodeURIComponent(q)}`, { cache: "no-store" });
+    const extra = isUkr ? `&region=${encodeURIComponent(ukrRegion)}` : "";
+    const res = await fetch(`${base}?q=${encodeURIComponent(q)}${extra}`, { cache: "no-store" });
     const data = await res.json();
     if (data.configured === false) {
       if (isUkr) setUkrManual(true); else setNpManual(true);
@@ -202,11 +213,27 @@ export function DeliveryPicker({ onChange }: { onChange: (v: DeliveryValue) => v
             </p>
           )}
 
+          {isUkr && !manual && (
+            <div className="field dp-region">
+              <label>Область</label>
+              <select
+                value={ukrRegion}
+                onChange={(e) => { setUkrRegion(e.target.value); setCity(""); setCityRef(""); setPoint(""); }}
+              >
+                <option value="">Оберіть область…</option>
+                {UKR_REGIONS.map((r) => (
+                  <option key={r} value={r}>{r === "Київ" ? "м. Київ" : `${r} обл.`}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="row2">
             <Suggest
               label="Місто"
-              placeholder="Почніть вводити — Київ, Львів…"
+              placeholder={isUkr && !manual && !ukrRegion ? "Спочатку оберіть область" : "Почніть вводити — Київ, Львів…"}
               value={city}
+              disabled={isUkr && !manual && !ukrRegion}
               manual={manual}
               fetcher={fetchCities}
               onText={(t) => { setCity(t); setCityRef(""); setPoint(""); }}
