@@ -62,14 +62,15 @@ export default function CartPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {items.map((c) => (
             <div key={c.slug} className="cart-item">
-              <Link href={`/product/${c.slug}`} className="cart-item-img">
+              <Link href={`/product/${c.productSlug}`} className="cart-item-img">
                 <div className="bottle">
                   <ImageSlot shape="rounded" radius={14} placeholder={c.name} src={c.image} alt={c.name} />
                 </div>
               </Link>
               <div className="cart-item-info">
                 <div className="cart-item-brand">{c.brand}</div>
-                <Link href={`/product/${c.slug}`} className="cart-item-name">{c.name}</Link>
+                <Link href={`/product/${c.productSlug}`} className="cart-item-name">{c.name}</Link>
+                {c.variant && <span className="cart-item-variant">{c.variant}</span>}
                 <div className="cart-item-bottom">
                   <div className="qty-mini">
                     <button onClick={() => updateQuantity(c.slug, c.quantity - 1)} aria-label="Менше">

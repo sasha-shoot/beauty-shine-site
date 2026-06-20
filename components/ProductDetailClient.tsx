@@ -23,9 +23,14 @@ export function ProductDetailClient({ product }: { product: Product }) {
   );
   const [activeImg, setActiveImg] = useState(images[0] ?? "");
   const isDiva = /diva/i.test(product.brand);
+  const hasVariants = product.variants.length >= 2;
+  const [variantIdx, setVariantIdx] = useState(0);
+  const selectedVariant = hasVariants ? product.variants[variantIdx] : null;
+  const currentPrice = selectedVariant ? selectedVariant.price : (product.price_uah ?? 0);
   useEffect(() => {
-    // скидаємо активне фото при переході на інший товар
+    // скидаємо активне фото та варіант при переході на інший товар
     setActiveImg(images[0] ?? "");
+    setVariantIdx(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.slug]);
 
@@ -51,14 +56,16 @@ export function ProductDetailClient({ product }: { product: Product }) {
   }
 
   function handleAdd() {
-    if (!product.price_uah) return;
+    if (!currentPrice) return;
+    const variantName = selectedVariant ? selectedVariant.name : "";
     const item: Omit<CartItem, "quantity"> = {
-      slug: product.slug,
+      slug: variantName ? `${product.slug}::${variantName}` : product.slug,
+      productSlug: product.slug,
       name: product.name,
       brand: product.brand,
       image: product.image,
-      price_uah: product.price_uah,
-      variants_display: product.variants_display,
+      price_uah: currentPrice,
+      variant: variantName,
     };
     for (let i = 0; i < qty; i++) addItem(item);
     setAdded(true);
@@ -106,26 +113,42 @@ export function ProductDetailClient({ product }: { product: Product }) {
         <div className="prod-brand">{product.brand}</div>
         {isDiva && (
           <div className="partner-badge">
-            <span className="pb-logo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/divafarm/divapharm-logo.png" alt="DivaPharm" />
-            </span>
-            <span className="pb-text">Офіційний партнер <b>DivaPharm</b></span>
-            <svg className="pb-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="pb-logo" src="/divafarm/divapharm-logo.png" alt="DivaPharm" />
+            <span className="pb-text">Офіційний партнер</span>
           </div>
         )}
         {product.price_uah ? (
           <>
-            <div className="prod-price num">{product.price_uah}<small>грн</small></div>
+            <div className="prod-price num">{currentPrice}<small>грн</small></div>
             <div className="prod-bonus" title="Бонуси за програмою лояльності">
               <svg viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z"/></svg>
-              <span>+{bonusFor(product.price_uah)} ✦ бонусів на рахунок за це замовлення</span>
+              <span>+{bonusFor(currentPrice)} ✦ бонусів на рахунок за це замовлення</span>
             </div>
           </>
         ) : (
           <div className="prod-price num"><small>Ціна за запитом</small></div>
         )}
         <p className="prod-lead">{product.short}</p>
+
+        {hasVariants && (
+          <div className="prod-variants">
+            <span className="prod-variants-label">Об'єм</span>
+            <div className="prod-variants-opts">
+              {product.variants.map((v, i) => (
+                <button
+                  key={v.name}
+                  type="button"
+                  className={`variant-opt ${i === variantIdx ? "active" : ""}`}
+                  onClick={() => setVariantIdx(i)}
+                >
+                  <span className="vo-name">{v.name}</span>
+                  <span className="vo-price">{v.price} грн</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {product.price_uah ? (
           <div className="qty">
@@ -161,12 +184,6 @@ export function ProductDetailClient({ product }: { product: Product }) {
           </div>
           <div className="tab-body">{tabContent}</div>
         </div>
-
-        {product.variants_display && (
-          <div style={{ marginTop: 16, padding: "12px 16px", background: "var(--lavender)", borderRadius: 12, fontSize: 13.5, color: "var(--ink-2)" }}>
-            <strong>Варіанти: </strong>{product.variants_display}
-          </div>
-        )}
       </div>
     </div>
   );

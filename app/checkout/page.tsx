@@ -57,7 +57,7 @@ export default function CheckoutPage() {
           city: form.city,
           branch: form.branch,
           comment: form.comment,
-          items: items.map((i) => ({ name: i.name, qty: i.quantity, price: i.price_uah })),
+          items: items.map((i) => ({ name: i.name, qty: i.quantity, price: i.price_uah, variant: i.variant })),
           total: totalPrice,
         }),
       });

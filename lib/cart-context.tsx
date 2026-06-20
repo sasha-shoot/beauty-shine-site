@@ -3,12 +3,13 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type CartItem = {
-  slug: string;
+  slug: string;          // ключ позиції в кошику (для варіантів = productSlug::variant)
+  productSlug: string;   // справжній slug товару (для посилань)
   name: string;
   brand: string;
   image: string;
-  price_uah: number;
-  variants_display: string;
+  price_uah: number;     // ціна обраного варіанта
+  variant: string;       // назва обраного варіанта ("" якщо варіантів немає)
   quantity: number;
 };
 

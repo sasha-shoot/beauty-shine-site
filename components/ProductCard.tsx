@@ -45,13 +45,15 @@ export function ProductCard({ product }: { product: Product }) {
     e.preventDefault();
     e.stopPropagation();
     if (!product.price_uah) return;
+    const firstVariant = product.variants.length >= 2 ? product.variants[0] : null;
     const item: Omit<CartItem, "quantity"> = {
-      slug: product.slug,
+      slug: firstVariant ? `${product.slug}::${firstVariant.name}` : product.slug,
+      productSlug: product.slug,
       name: product.name,
       brand: product.brand,
       image: product.image,
-      price_uah: product.price_uah,
-      variants_display: product.variants_display,
+      price_uah: firstVariant ? firstVariant.price : product.price_uah,
+      variant: firstVariant ? firstVariant.name : "",
     };
     addItem(item);
   }

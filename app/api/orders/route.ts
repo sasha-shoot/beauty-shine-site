@@ -9,7 +9,7 @@ const BASE_ID = process.env.AIRTABLE_BASE_ID;
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_TG_CHAT_ID = process.env.ADMIN_TG_CHAT_ID;
 
-type Item = { name: string; qty: number; price: number };
+type Item = { name: string; qty: number; price: number; variant?: string };
 type Body = {
   customer_name: string;
   customer_phone: string;
@@ -57,12 +57,12 @@ function genOrderNo(): string {
 }
 
 function formatItemsForDB(items: Item[]): string {
-  return items.map((i) => `${i.name} ×${i.qty}`).join(", ");
+  return items.map((i) => `${i.name}${i.variant ? ` (${i.variant})` : ""} ×${i.qty}`).join(", ");
 }
 
 function formatItemsForBot(items: Item[]): string {
   return items
-    .map((i) => `  • ${escHtml(i.name)} ×${i.qty} — ${i.price * i.qty} грн`)
+    .map((i) => `  • ${escHtml(i.name)}${i.variant ? ` (${escHtml(i.variant)})` : ""} ×${i.qty} — ${i.price * i.qty} грн`)
     .join("\n");
 }
 
@@ -186,7 +186,8 @@ export async function POST(req: NextRequest) {
     if (!isFiniteNum(it.price) || it.price < 0 || it.price > MAX_PRICE) {
       return NextResponse.json({ ok: false, error: "Невалідна ціна" }, { status: 400 });
     }
-    items.push({ name, qty: it.qty, price: Math.round(it.price) });
+    const variant = cleanStr(it.variant, 60);
+    items.push({ name, qty: it.qty, price: Math.round(it.price), variant });
   }
 
   /* 5. Верифікація total — сервер рахує сам, клієнту не довіряємо */

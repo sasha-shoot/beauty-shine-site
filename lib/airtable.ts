@@ -20,6 +20,7 @@ export type Product = {
   category: string;
   tags: string[];
   variants_display: string;
+  variants: { name: string; price: number }[];   // розпарсені варіанти з цінами
   price_uah: number | null;       // ваша роздрібна ціна
   supplier_min_price: number;
   supplier_max_price: number;
@@ -100,6 +101,18 @@ function recordToProduct(rec: any): Product {
     gallery = f.gallery.map((a: any) => a.url).filter(Boolean);
   }
 
+  const parseVariants = (display: string, fallbackPrice: number) => {
+    if (!display) return [] as { name: string; price: number }[];
+    return display
+      .split("|")
+      .map((part) => {
+        const t = part.trim();
+        const m = t.match(/^(.*?)\s*[—–-]\s*(\d+)/);
+        return m ? { name: m[1].trim(), price: parseInt(m[2], 10) } : { name: t, price: fallbackPrice };
+      })
+      .filter((v) => v.name);
+  };
+
   return {
     rec_id: rec.id,
     slug,
@@ -108,6 +121,7 @@ function recordToProduct(rec: any): Product {
     category: f.category || "",
     tags: typeof f.tags === "string" ? f.tags.split(",").map((x: string) => x.trim()) : f.tags || [],
     variants_display: f.variants_display || "",
+    variants: parseVariants(f.variants_display || "", typeof f.price_uah === "number" ? f.price_uah : 0),
     price_uah: typeof f.price_uah === "number" ? f.price_uah : null,
     supplier_min_price: f.supplier_min_price || 0,
     supplier_max_price: f.supplier_max_price || 0,
